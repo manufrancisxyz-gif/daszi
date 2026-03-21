@@ -175,28 +175,68 @@ section{padding:8rem 3rem}
 .reveal-delay-1{transition-delay:.15s}
 .reveal-delay-2{transition-delay:.3s}
 
+/* MOBILE NAV TOGGLE */
+.nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:101;padding:4px}
+.nav-toggle span{display:block;width:22px;height:1.5px;background:var(--muted-light);transition:all .3s}
+.nav-toggle.active span:nth-child(1){transform:rotate(45deg) translate(4px,5px)}
+.nav-toggle.active span:nth-child(2){opacity:0}
+.nav-toggle.active span:nth-child(3){transform:rotate(-45deg) translate(4px,-5px)}
+
+/* TABLET */
+@media(max-width:1024px){
+  section{padding:6rem 2rem}
+  .about-grid{gap:3rem}
+  .tile-grid{grid-template-columns:repeat(3,1fr)}
+  .album-feature{gap:2rem;padding:1.5rem}
+}
+
+/* MOBILE */
 @media(max-width:768px){
-  nav{padding:1.2rem 1.5rem}
-  .nav-links{gap:1.5rem}
-  .nav-links a{font-size:.6rem}
-  section{padding:5rem 1.5rem}
-  .about-grid{grid-template-columns:1fr;gap:3rem}
-  .track{grid-template-columns:28px 1fr auto;gap:1rem}
-  .track-year{display:none}
-  .footer-section{padding:3rem 1.5rem}
-  .footer-inner{flex-direction:column;gap:1.5rem;text-align:center}
-  .footer-icons{justify-content:center}
-  .about-stats{gap:2rem;flex-wrap:wrap}
-  .spotify-bar{padding:0 1.5rem}
-  .photo-full{height:35vh;min-height:250px}
+  html{font-size:16px}
+  nav{padding:1rem 1.2rem}
+  .nav-toggle{display:flex}
+  .nav-links{position:fixed;top:0;right:-100%;width:70vw;max-width:300px;height:100vh;background:rgba(10,10,10,.97);backdrop-filter:blur(20px);flex-direction:column;justify-content:center;align-items:center;gap:2.5rem;transition:right .4s ease;z-index:100;border-left:1px solid var(--border)}
+  .nav-links.open{right:0}
+  .nav-links a{font-size:1rem;letter-spacing:.3em}
+  section{padding:4rem 1.2rem}
+  .hero-logo{width:min(320px,80vw)}
+  .hero-sub{font-size:.8rem;letter-spacing:.3em}
+  .hero-cta{flex-direction:column;align-items:center;gap:.8rem}
+  .section-title{font-size:clamp(1.8rem,7vw,2.8rem);margin-bottom:2rem}
+  .about-grid{grid-template-columns:1fr;gap:2.5rem}
+  .about-text p{font-size:1.1rem}
+  .about-img-wrap::before{top:.6rem;left:.6rem;right:-.6rem;bottom:-.6rem}
+  .tile-grid{grid-template-columns:repeat(2,1fr);gap:.8rem}
+  .tile h4{font-size:.75rem}
+  .tile p{font-size:.6rem}
+  .album-feature{grid-template-columns:1fr;gap:1.5rem;padding:1.2rem}
+  .album-feature-info h3{font-size:1.5rem}
+  .album-desc{font-size:.95rem}
+  .photo-full{height:30vh;min-height:220px}
   .photo-duo{grid-template-columns:1fr}
-  .photo-duo .photo-cell{height:35vh}
-  .hero-cta{flex-direction:column;align-items:center}
+  .photo-duo .photo-cell{height:30vh}
+  .videos-section{padding:4rem 1.2rem}
   .yt-grid{grid-template-columns:1fr}
-  .tile-grid{grid-template-columns:repeat(2,1fr);gap:1rem}
-  .album-feature{grid-template-columns:1fr;gap:1.5rem;padding:1.5rem}
-  .contact-grid{grid-template-columns:repeat(2,1fr)}
-  .contact-section{padding:5rem 1.5rem}
+  .listen-cta{flex-direction:column;align-items:center;gap:.8rem}
+  .listen-cta .divider{display:none}
+  .spotify-bar{padding:0}
+  .contact-section{padding:4rem 1.2rem}
+  .footer-section{padding:2.5rem 1.2rem}
+  .footer-inner{flex-direction:column;gap:1.2rem;text-align:center}
+  .footer-icons{justify-content:center}
+  .footer-brand{font-size:.8rem}
+  .btn{padding:.75rem 1.8rem;font-size:.7rem}
+  .music-bg-overlay{background:linear-gradient(180deg,var(--bg) 0%,rgba(10,10,10,.8) 10%,rgba(10,10,10,.7) 50%,rgba(10,10,10,.8) 90%,var(--bg) 100%)}
+}
+
+/* SMALL MOBILE */
+@media(max-width:400px){
+  nav{padding:.8rem 1rem}
+  .hero-logo{width:min(260px,85vw)}
+  .tile-grid{grid-template-columns:repeat(2,1fr);gap:.6rem}
+  .tile h4{font-size:.7rem}
+  section{padding:3rem 1rem}
+  .album-feature{padding:1rem}
 }
 </style>
 </head>
@@ -204,7 +244,10 @@ section{padding:8rem 3rem}
 
 <nav id="nav">
   <span class="nav-brand">daszi</span>
-  <div class="nav-links">
+  <div class="nav-toggle" id="navToggle">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="nav-links" id="navLinks">
     <a href="#music">Music</a>
     <a href="#about">About</a>
     <a href="#contact">Contact</a>
@@ -441,11 +484,14 @@ section{padding:8rem 3rem}
 
 <script>
 const nav=document.getElementById('nav');
+const navToggle=document.getElementById('navToggle');
+const navLinks=document.getElementById('navLinks');
 window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.pageYOffset>80)});
+navToggle.addEventListener('click',()=>{navToggle.classList.toggle('active');navLinks.classList.toggle('open')});
+navLinks.querySelectorAll('a').forEach(a=>{a.addEventListener('click',()=>{navToggle.classList.remove('active');navLinks.classList.remove('open')})});
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
-// YouTube: click thumbnail to load iframe player
 document.getElementById('yt-fallback')?.addEventListener('click',function(e){
   e.preventDefault();
   const container=document.getElementById('yt-player');
