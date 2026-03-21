@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>daszi — Official</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--fg:#e8e4de;--white:#fff;--muted:#5a5a5a;--muted-light:#8a8a8a;--card:#0f0f0f;--border:#1a1a1a;--border-light:#2a2a2a}
+html{scroll-behavior:smooth;font-size:17px}
+body{background:var(--bg);color:var(--fg);font-family:'Instrument Sans',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--white);color:#000}
+a{color:inherit;text-decoration:none}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+nav{position:fixed;top:0;left:0;width:100%;z-index:100;padding:1.5rem 3rem;display:flex;align-items:center;justify-content:space-between;transition:all .5s}
+nav.scrolled{background:rgba(10,10,10,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;letter-spacing:.3em;text-transform:lowercase;color:var(--muted-light)}
+.nav-links{display:flex;gap:2.5rem}
+.nav-links a{font-size:.8rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted-light);font-weight:500;transition:color .3s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--white);transition:width .4s}
+.nav-links a:hover{color:var(--white)}
+.nav-links a:hover::after{width:100%}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 30%;opacity:.45}
+.hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 75% 75%,transparent 0%,rgba(10,10,10,.2) 25%,rgba(10,10,10,.75) 55%,rgba(10,10,10,.95) 80%)}
+.hero-bg::before{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(10,10,10,.5) 0%,rgba(10,10,10,.4) 30%,rgba(10,10,10,.1) 65%,rgba(10,10,10,.9) 100%)}
+.hero-content{position:relative;z-index:1;text-align:center}
+.hero-logo{width:min(450px,78vw);animation:heroIn 1.6s cubic-bezier(.23,1,.32,1) both}
+.hero-sub{margin-top:2rem;font-family:'Cormorant Garamond',serif;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:.5em;color:var(--muted-light);text-transform:lowercase;font-weight:300;animation:heroIn 1.6s .3s cubic-bezier(.23,1,.32,1) both}
+.hero-cta{margin-top:2.5rem;display:flex;gap:1rem;justify-content:center;animation:heroIn 1.6s .5s cubic-bezier(.23,1,.32,1) both}
+.hero-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--muted),transparent);position:absolute;bottom:2.5rem;left:50%;z-index:1;animation:heroIn 1.6s .7s cubic-bezier(.23,1,.32,1) both}
+
+/* PHOTO BREAKS */
+.photo-break{position:relative;overflow:hidden}
+.photo-break img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 8s ease-out}
+.photo-break:hover img{transform:scale(1.03)}
+.photo-full{height:55vh;min-height:350px}
+.photo-full::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,var(--bg) 0%,transparent 12%,transparent 88%,var(--bg) 100%);pointer-events:none}
+/* Two-up photo row */
+.photo-duo{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.photo-duo .photo-cell{height:45vh;min-height:300px;overflow:hidden;position:relative}
+.photo-duo .photo-cell img{width:100%;height:100%;object-fit:cover;transition:transform 6s ease-out}
+.photo-duo .photo-cell:hover img{transform:scale(1.04)}
+.photo-duo::before{content:'';position:absolute;top:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,var(--bg),transparent);z-index:1;pointer-events:none}
+.photo-duo::after{content:'';position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to top,var(--bg),transparent);z-index:1;pointer-events:none}
+
+.spotify-bar{padding:0 3rem;position:relative;z-index:2;margin-top:-1rem}
+
+section{padding:8rem 3rem}
+.section-num{font-family:'Cormorant Garamond',serif;font-size:.85rem;color:var(--muted);letter-spacing:.4em;margin-bottom:.5rem}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:300;line-height:1.1;margin-bottom:3rem}
+.section-title em{font-style:italic}
+
+/* FEATURED ALBUM */
+.albums-row{max-width:800px;margin:0 auto}
+.album-feature{display:grid;grid-template-columns:1fr 1.2fr;gap:2.5rem;align-items:center;padding:2rem;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;transition:all .5s;cursor:pointer}
+.album-feature:hover{border-color:var(--border-light);background:rgba(255,255,255,.04);transform:translateY(-3px)}
+.album-feature-art{position:relative;aspect-ratio:1;overflow:hidden;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.album-feature-art img{width:100%;height:100%;object-fit:cover}
+.album-feature-info h3{font-family:'Cormorant Garamond',serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:300;margin-bottom:.5rem}
+.album-feature-info>p{font-size:.85rem;color:var(--muted);letter-spacing:.1em}
+.album-desc{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted-light);line-height:1.7;margin-top:1rem;font-weight:300}
+
+/* TILE GRID DISCOGRAPHY */
+.music-section{position:relative;overflow:hidden}
+.music-bg{position:absolute;inset:0;z-index:0}
+.music-bg video{width:100%;height:100%;object-fit:cover;opacity:.12}
+.music-bg-overlay{position:absolute;inset:0;background:linear-gradient(180deg,var(--bg) 0%,rgba(10,10,10,.7) 15%,rgba(10,10,10,.6) 50%,rgba(10,10,10,.7) 85%,var(--bg) 100%)}
+.music-inner{position:relative;z-index:1}
+.tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1.5rem;max-width:1000px;margin:0 auto}
+.tile{display:block;cursor:pointer;transition:transform .4s}
+.tile:hover{transform:translateY(-5px)}
+.tile-art{position:relative;aspect-ratio:1;overflow:hidden;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.tile-art img{width:100%;height:100%;object-fit:cover;transition:all .4s}
+.tile-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(10,10,10,.6) 80%,rgba(10,10,10,.85) 100%);z-index:1;pointer-events:none;transition:opacity .4s}
+.tile:hover .tile-overlay{opacity:.4}
+.tile:hover .tile-art img{transform:scale(1.08)}
+.tile-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;z-index:2}
+.tile:hover .tile-play{opacity:1}
+.tile-play svg{filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
+.tile h4{font-size:.9rem;font-weight:500;margin-top:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.tile p{font-size:.75rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.tracks{max-width:800px}
+.track{display:grid;grid-template-columns:32px 1fr auto auto;align-items:center;gap:1.5rem;padding:1.4rem 0;border-bottom:1px solid var(--border);transition:all .3s;cursor:pointer}
+.track:hover{padding-left:.8rem}
+.track-num{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted)}
+.track:hover .track-num{color:var(--white)}
+.track-title{font-size:.95rem;font-weight:500}
+.track-title span{display:block;font-size:.75rem;color:var(--muted);margin-top:.2rem;font-weight:400}
+.track-year{font-family:'Cormorant Garamond',serif;font-size:.85rem;color:var(--muted)}
+.track-link{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-light);border:1px solid var(--border-light);padding:.4rem 1rem;transition:all .3s}
+.track:hover .track-link{border-color:var(--white);color:var(--white)}
+.albums-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;margin-top:3rem;max-width:800px}
+.album-card{cursor:pointer;transition:transform .4s}
+.album-card:hover{transform:translateY(-4px)}
+.album-art{aspect-ratio:1;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
+.album-art-text{font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:#1a1a1a;font-weight:300;font-style:italic}
+.album-card h4{font-size:.85rem;font-weight:500;margin-bottom:.2rem}
+.album-card p{font-size:.7rem;color:var(--muted)}
+.listen-cta{display:flex;gap:1rem;margin-top:2.5rem;align-items:center;flex-wrap:wrap}
+.listen-cta .divider{width:40px;height:1px;background:var(--border-light)}
+
+.merch-section{border-top:1px solid var(--border)}
+.merch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2rem;max-width:900px}
+.merch-card{background:var(--card);border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:all .5s}
+.merch-card:hover{border-color:var(--border-light);transform:translateY(-4px)}
+.merch-img{aspect-ratio:1;background:#111;display:flex;align-items:center;justify-content:center;position:relative}
+.merch-img::after{content:'COMING SOON';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,10,10,.85);font-size:.7rem;letter-spacing:.3em;color:var(--muted-light);opacity:0;transition:opacity .4s}
+.merch-card:hover .merch-img::after{opacity:1}
+.merch-placeholder{font-family:'Cormorant Garamond',serif;font-size:3rem;color:#1a1a1a;font-style:italic}
+.merch-info{padding:1.2rem 1.5rem;border-top:1px solid var(--border)}
+.merch-info h3{font-size:.85rem;font-weight:500;margin-bottom:.3rem}
+.merch-info .price{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted-light)}
+
+.about-section{border-top:1px solid var(--border)}
+.about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:5rem;max-width:1000px;align-items:start}
+.about-img-wrap{position:relative}
+.about-img-wrap::before{content:'';position:absolute;top:1rem;left:1rem;right:-1rem;bottom:-1rem;border:1px solid var(--border);z-index:0}
+.about-img{width:100%;aspect-ratio:3/4;position:relative;z-index:1;overflow:hidden;border:1px solid var(--border)}
+.about-img img{width:100%;height:100%;object-fit:cover;object-position:center 20%;transition:transform .6s}
+.about-img:hover img{transform:scale(1.03)}
+.about-text p{font-family:'Cormorant Garamond',serif;font-size:1.3rem;line-height:1.9;color:var(--muted-light);font-weight:300;margin-bottom:1.5rem}
+.about-text p:first-of-type::first-letter{font-size:3.5rem;float:left;line-height:.85;margin-right:.6rem;margin-top:.15rem;color:var(--white)}
+.about-stats{display:flex;gap:3rem;margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--border)}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--white)}
+.stat-label{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:.2rem}
+.social-row{display:flex;gap:.8rem;margin-top:2.5rem}
+.social-btn{width:40px;height:40px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .3s;font-size:.6rem;font-weight:600;color:var(--muted)}
+.social-btn:hover{border-color:var(--white);color:var(--white);background:rgba(255,255,255,.03)}
+
+/* CONTACT */
+.contact-section{border-top:1px solid var(--border);padding:8rem 3rem}
+.contact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;max-width:900px;margin:0 auto}
+.contact-card{text-align:center;padding:2rem 1rem;border:1px solid var(--border);border-radius:4px;transition:all .4s}
+.contact-card:hover{border-color:var(--border-light);background:rgba(255,255,255,.02)}
+.contact-card h4{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:400;margin-bottom:.6rem;color:var(--fg)}
+.contact-card a{font-size:.85rem;color:var(--muted-light);letter-spacing:.05em;transition:color .3s}
+.contact-card:hover a{color:var(--white)}
+
+.footer-section{border-top:1px solid var(--border);padding:4rem 3rem}
+.footer-inner{display:flex;align-items:center;justify-content:space-between}
+.footer-brand{font-family:'Cormorant Garamond',serif;font-size:.9rem;font-weight:300;letter-spacing:.3em;color:var(--muted);text-transform:lowercase}
+.footer-copy{font-size:.75rem;color:var(--muted);letter-spacing:.15em}
+.footer-icons{display:flex;gap:1.2rem}
+.footer-icons a{color:var(--muted);transition:color .3s}
+.footer-icons a:hover{color:var(--white)}
+
+.btn{padding:.9rem 2.2rem;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;border:none;cursor:pointer;transition:all .4s;font-family:'Instrument Sans',sans-serif;font-weight:500;display:inline-block}
+.btn-white{background:var(--white);color:#000}
+.btn-white:hover{background:transparent;color:var(--white);box-shadow:inset 0 0 0 1px var(--white)}
+.btn-outline{background:transparent;color:var(--fg);border:1px solid var(--border-light)}
+.btn-outline:hover{border-color:var(--white);color:var(--white)}
+
+/* VIDEOS */
+.videos-section{border-top:1px solid var(--border)}
+.yt-grid{max-width:1000px;margin:0 auto}
+.yt-card p{font-size:.75rem;color:var(--muted);margin-top:.8rem;letter-spacing:.1em}
+.video-embed{position:relative;width:100%;padding-bottom:56.25%;overflow:hidden;border:1px solid var(--border);border-radius:4px;background:#000}
+.video-embed iframe,.video-embed .video-fallback{position:absolute;top:0;left:0;width:100%;height:100%}
+.video-fallback{display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2}
+.video-fallback img{width:100%;height:100%;object-fit:cover;filter:brightness(.7);transition:filter .3s}
+.video-fallback:hover img{filter:brightness(.9)}
+.yt-play-btn{position:absolute;z-index:3;transition:transform .3s}
+.video-fallback:hover .yt-play-btn{transform:scale(1.1)}
+
+@keyframes heroIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(25px);transition:opacity .9s ease-out,transform .9s ease-out}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.15s}
+.reveal-delay-2{transition-delay:.3s}
+
+@media(max-width:768px){
+  nav{padding:1.2rem 1.5rem}
+  .nav-links{gap:1.5rem}
+  .nav-links a{font-size:.6rem}
+  section{padding:5rem 1.5rem}
+  .about-grid{grid-template-columns:1fr;gap:3rem}
+  .track{grid-template-columns:28px 1fr auto;gap:1rem}
+  .track-year{display:none}
+  .footer-section{padding:3rem 1.5rem}
+  .footer-inner{flex-direction:column;gap:1.5rem;text-align:center}
+  .footer-icons{justify-content:center}
+  .about-stats{gap:2rem;flex-wrap:wrap}
+  .spotify-bar{padding:0 1.5rem}
+  .photo-full{height:35vh;min-height:250px}
+  .photo-duo{grid-template-columns:1fr}
+  .photo-duo .photo-cell{height:35vh}
+  .hero-cta{flex-direction:column;align-items:center}
+  .yt-grid{grid-template-columns:1fr}
+  .tile-grid{grid-template-columns:repeat(2,1fr);gap:1rem}
+  .album-feature{grid-template-columns:1fr;gap:1.5rem;padding:1.5rem}
+  .contact-grid{grid-template-columns:repeat(2,1fr)}
+  .contact-section{padding:5rem 1.5rem}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <span class="nav-brand">daszi</span>
+  <div class="nav-links">
+    <a href="#music">Music</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank">Spotify</a>
+    <a href="https://www.youtube.com/@daszi" target="_blank">YouTube</a>
+  </div>
+</nav>
+
+<!-- HERO — stage shot with logo overlay -->
+<section class="hero">
+  <div class="hero-bg">
+    <img src="daszi_stage.jpg" alt="">
+  </div>
+  <div class="hero-content" style="margin-top:0">
+    <img class="hero-logo" src="daszi_hero_logo.png" alt="daszi">
+    <p class="hero-sub">genre : not found</p>
+    <div class="hero-cta">
+      <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="btn btn-white">Listen Now</a>
+      <a href="#about" class="btn btn-outline">Explore</a>
+    </div>
+  </div>
+  <div class="hero-line"></div>
+</section>
+
+<!-- MUSIC -->
+<section class="music-section" id="music">
+  <div class="music-bg">
+    <video autoplay muted loop playsinline><source src="daszi_bg_video.mp4" type="video/mp4"></video>
+    <div class="music-bg-overlay"></div>
+  </div>
+  <div class="music-inner">
+    <div class="reveal" style="text-align:center">
+      <p class="section-num">01</p>
+      <h2 class="section-title">Discography</h2>
+    </div>
+
+    <!-- ALBUMS -->
+    <div class="reveal" style="text-align:center;margin-bottom:1rem">
+      <p class="section-num" style="margin-bottom:.3rem">Albums &amp; EPs</p>
+    </div>
+    <div class="albums-row">
+      <a href="https://daszi.bandcamp.com/album/ft-nature" target="_blank" class="album-feature reveal">
+        <div class="album-feature-art">
+          <img src="ft_nature_art.jpg" alt="Ft Nature">
+          <div class="tile-overlay"></div>
+        </div>
+        <div class="album-feature-info">
+          <h3>Ft Nature</h3>
+          <p>Album · January 2025 · 6 tracks</p>
+          <p class="album-desc">Archiving rooted music cultures in different forests of Kerala, India with a modern take on soundscapes.</p>
+          <span class="btn btn-outline" style="margin-top:1rem;display:inline-block;font-size:.6rem;padding:.6rem 1.5rem">Listen</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- SINGLES -->
+    <div class="reveal" style="text-align:center;margin-top:4rem;margin-bottom:1rem">
+      <p class="section-num" style="margin-bottom:.3rem">Singles</p>
+    </div>
+    <div class="tile-grid">
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_hridayam.jpg" alt="Hridayam"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Hridayam</h4><p>feat. Achayan · 2025</p>
+    </a>
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_kumbasaram.jpg" alt="Kumbasaram"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Kumbasaram</h4><p>with STIC · 2025</p>
+    </a>
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_gharse.jpg" alt="Ghar se"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Ghar se</h4><p>with Shivani Sen &amp; JORJ. · 2025</p>
+    </a>
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_kiliyo.jpg" alt="Kiliyo"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Kiliyo</h4><p>with JORJ. · 2025</p>
+    </a>
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_aadanum.jpg" alt="Aadanum"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Aadanum</h4><p>with RAK · 2025</p>
+    </a>
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_urmila.jpg" alt="Urmila"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Urmila</h4><p>with Dridha · 2025</p>
+    </a>
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_thiruvizha.jpg" alt="Welcome To Thiruvizha"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Welcome To Thiruvizha</h4><p>with RAK · 2025</p>
+    </a>
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_chekkile.jpg" alt="Chekkile Gang"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Chekkile Gang</h4><p>with CJ J, PARAVA 98 &amp; G V · 2025</p>
+    </a>
+    <a href="https://open.spotify.com/album/0fRPaqy7bN8Wri1o4d0wmq" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_poov.jpg" alt="Poov"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Poov</h4><p>with Ashitha · 2025</p>
+    </a>
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_somewhere.jpg" alt="Somewhere Along The Way"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Somewhere Along The Way</h4><p>Single · 2025</p>
+    </a>
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_rasathi.jpg" alt="Rasathi"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Rasathi (Unplugged)</h4><p>Single · 2025</p>
+    </a>
+    <a href="https://open.spotify.com/track/5g3M3BGVeyoLx5FOPhwGvM" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_chathan.jpg" alt="Chathan"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Chathan</h4><p>Methi, Pt. 1 EP · 2024</p>
+    </a>
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_vintage.jpg" alt="VINTAGE Freestyle"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>VINTAGE Freestyle</h4><p>with JORJ. · 2024</p>
+    </a>
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_evide.jpg" alt="Evide Maranam"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Evide Maranam</h4><p>Single · 2024</p>
+    </a>
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_aadalam.jpg" alt="Aadalam Paadalam"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Aadalam Paadalam</h4><p>Single · 2024</p>
+    </a>
+  </div>
+  <div class="listen-cta reveal" style="justify-content:center;margin-top:3rem">
+    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="btn btn-white">Listen on Spotify</a>
+    <span class="divider"></span>
+    <a href="https://daszi.bandcamp.com" target="_blank" class="btn btn-outline">Bandcamp</a>
+    <a href="https://music.apple.com/us/artist/daszi/1650092743" target="_blank" class="btn btn-outline">Apple Music</a>
+  </div>
+  <div class="spotify-bar reveal" style="max-width:900px;margin:2.5rem auto 0;padding:0">
+    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/artist/0afiI57tEFIwLFQBZC71sp?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+  </div>
+  </div>
+</section>
+
+<!-- VIDEOS — YouTube embed -->
+<section class="videos-section" id="videos">
+  <div class="reveal">
+    <p class="section-num">—</p>
+    <h2 class="section-title"><em>Watch</em></h2>
+  </div>
+  <div class="yt-latest reveal">
+    <div class="yt-grid">
+      <div class="yt-card">
+        <div class="video-embed" id="yt-player">
+          <a href="https://youtu.be/TZY5K9YQfiA" target="_blank" class="video-fallback" id="yt-fallback">
+            <img src="https://img.youtube.com/vi/TZY5K9YQfiA/maxresdefault.jpg" alt="daszi - Watch on YouTube" onerror="this.src='daszi_stage.jpg'">
+            <div class="yt-play-btn"><svg viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24L27 14v20" fill="white"/></svg></div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:2rem;text-align:center" class="reveal">
+      <a href="https://www.youtube.com/@daszi" target="_blank" class="btn btn-outline">View All on YouTube</a>
+    </div>
+  </div>
+</section>
+
+<!-- PHOTO BREAK — DJ closeup + spotlight portrait side by side -->
+<div class="photo-duo" style="position:relative">
+  <div class="photo-cell"><img src="daszi_dj_closeup.jpg" alt="daszi live"></div>
+  <div class="photo-cell"><img src="daszi_spotlight.jpg" alt="daszi"></div>
+</div>
+
+<!-- PHOTO BREAK — Red portrait + live setup duo -->
+<div class="photo-duo" style="position:relative">
+  <div class="photo-cell"><img src="daszi_red_portrait.jpg" alt="daszi red lights"></div>
+  <div class="photo-cell"><img src="daszi_live_setup.jpg" alt="daszi studio" style="object-position:center 40%"></div>
+</div>
+
+<!-- PHOTO BREAK — Pioneer DJ wide shot full width -->
+<div class="photo-break photo-full">
+  <img src="daszi_pioneer_wide.jpg" alt="daszi at the decks">
+</div>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+  <div class="reveal"><p class="section-num">02</p><h2 class="section-title">About <em>daszi</em></h2></div>
+  <div class="about-grid">
+    <div class="about-img-wrap reveal">
+      <div class="about-img">
+        <img src="daszi_portrait.jpg" alt="daszi" style="object-position:center 20%">
+      </div>
+    </div>
+    <div class="about-text reveal reveal-delay-1">
+      <p>Kerala-based composer and music producer. daszi creates fresh, rich-sounding music that weaves together folk and traditional sounds with contemporary production — bridging cultures through immersive sonic experiences.</p>
+      <p>From archiving the musical heritage of forests like Attappadi and Karuvanchal to collaborating with artists across the Indian underground, daszi's work sits at the intersection of experimental, ambient, psychedelic, and folktronic music. Live performances, music videos, and visualizers amplify every emotion woven into the sound.</p>
+      <p>A wanderlust of sounds. Genre: not found.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PHOTO BREAK — B&W mic with hanging lights + London night duo -->
+<div class="photo-duo" style="position:relative">
+  <div class="photo-cell"><img src="daszi_mic_bw.jpg" alt="daszi performing" style="object-position:center 60%"></div>
+  <div class="photo-cell"><img src="daszi_london_night.jpg" alt="daszi London"></div>
+</div>
+
+<!-- PHOTO BREAK — Tube station portrait + closeup B&W duo -->
+<div class="photo-duo" style="position:relative">
+  <div class="photo-cell"><img src="daszi_portrait.jpg" alt="daszi tube station" style="object-position:center 30%"></div>
+  <div class="photo-cell"><img src="daszi_closeup_bw.jpg" alt="daszi" style="object-position:center 25%"></div>
+</div>
+
+<!-- PHOTO BREAK — Silhouette from behind full width -->
+<div class="photo-break photo-full">
+  <img src="daszi_silhouette.jpg" alt="daszi on stage">
+</div>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="reveal" style="text-align:center">
+    <p class="section-num">03</p>
+    <h2 class="section-title"><em>Get in Touch</em></h2>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--muted-light);font-weight:300;margin-bottom:1.5rem">For bookings, collaborations &amp; enquiries</p>
+    <a href="mailto:example@example.com" style="font-size:1.1rem;color:var(--fg);letter-spacing:.1em;border-bottom:1px solid var(--border-light);padding-bottom:.3rem;transition:border-color .3s">example@example.com</a>
+    <p style="margin-top:1.2rem;font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted-light);font-weight:300">+91 98765 43210</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="footer-section">
+  <div class="footer-inner">
+    <span class="footer-brand">daszi</span>
+    <div class="footer-icons">
+      <a href="https://www.instagram.com/dasziii/" target="_blank" aria-label="Instagram"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg></a>
+      <a href="https://www.youtube.com/@daszi" target="_blank" aria-label="YouTube"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="4"/><polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none"/></svg></a>
+      <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" aria-label="Spotify"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 15c3-1 6-1 9 .5" stroke-linecap="round"/><path d="M7 12c4-1.5 8-1.5 11 .5" stroke-linecap="round"/><path d="M6.5 9c4.5-1.5 9.5-1.5 12.5 1" stroke-linecap="round"/></svg></a>
+      <a href="https://soundcloud.com/vishnu-das-3" target="_blank" aria-label="SoundCloud"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 16v-3m3 4v-5m3 5v-7m3 7v-8m3 8v-6m3 6v-4" stroke-linecap="round"/></svg></a>
+      <a href="https://daszi.bandcamp.com" target="_blank" aria-label="Bandcamp"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="4,18 10,6 20,6 14,18"/></svg></a>
+      <a href="https://music.apple.com/us/artist/daszi/1650092743" target="_blank" aria-label="Apple Music"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V7l10-2v11"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></a>
+    </div>
+    <span class="footer-copy">&copy; 2025 daszi. All rights reserved.</span>
+  </div>
+</div>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.pageYOffset>80)});
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+// YouTube: click thumbnail to load iframe player
+document.getElementById('yt-fallback')?.addEventListener('click',function(e){
+  e.preventDefault();
+  const container=document.getElementById('yt-player');
+  const iframe=document.createElement('iframe');
+  iframe.src='https://www.youtube.com/embed/TZY5K9YQfiA?autoplay=1';
+  iframe.frameBorder='0';
+  iframe.allow='accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture';
+  iframe.allowFullscreen=true;
+  iframe.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;z-index:5';
+  container.appendChild(iframe);
+  this.style.display='none';
+});
+</script>
+</body>
+</html>
