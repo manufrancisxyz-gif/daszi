@@ -281,7 +281,7 @@ section{padding:8rem 3rem}
 
 <!-- VIDEO SECTION — blends from hero -->
 <div class="video-blend">
-  <video autoplay muted loop playsinline webkit-playsinline poster="daszi_stage.jpg">
+  <video id="bgVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" poster="daszi_stage.jpg" defaultMuted>
     <source src="daszi_bg_video.mp4" type="video/mp4">
   </video>
   <div class="video-blend-fade-top"></div>
@@ -520,6 +520,23 @@ document.getElementById('yt-fallback')?.addEventListener('click',function(e){
   container.appendChild(iframe);
   this.style.display='none';
 });
+// Mobile video autoplay fallback
+const bgVideo=document.getElementById('bgVideo');
+if(bgVideo){
+  bgVideo.muted=true;
+  const tryPlay=()=>{
+    bgVideo.play().catch(()=>{});
+  };
+  tryPlay();
+  document.addEventListener('touchstart',tryPlay,{once:true});
+  document.addEventListener('scroll',tryPlay,{once:true});
+  document.addEventListener('click',tryPlay,{once:true});
+  // Also try when video section becomes visible
+  const vidObs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){tryPlay();vidObs.unobserve(e.target)}});
+  },{threshold:.1});
+  vidObs.observe(bgVideo);
+}
 </script>
 </body>
 </html>
