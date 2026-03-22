@@ -31,8 +31,8 @@ nav.scrolled .nav-logo-full{opacity:1}
 /* HERO */
 .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative;overflow:hidden}
 .hero-bg{position:absolute;inset:0;z-index:0}
-.hero-img-left{position:absolute;left:0;top:0;height:100%;width:65%;object-fit:cover;object-position:center center;opacity:.55;-webkit-mask-image:linear-gradient(to right,black 40%,transparent 100%);mask-image:linear-gradient(to right,black 40%,transparent 100%)}
-.hero-img-right{position:absolute;right:0;top:0;height:100%;width:70%;object-fit:cover;object-position:70% center;opacity:.4;-webkit-mask-image:linear-gradient(to left,black 40%,transparent 100%);mask-image:linear-gradient(to left,black 40%,transparent 100%)}
+.hero-img-left{position:absolute;left:0;top:0;height:100%;width:55%;object-fit:cover;object-position:center center;opacity:.55;-webkit-mask-image:linear-gradient(to right,black 30%,transparent 90%);mask-image:linear-gradient(to right,black 30%,transparent 90%)}
+.hero-img-right{position:absolute;right:0;top:0;height:100%;width:55%;object-fit:cover;object-position:70% center;opacity:.4;-webkit-mask-image:linear-gradient(to left,black 30%,transparent 90%);mask-image:linear-gradient(to left,black 30%,transparent 90%)}
 .hero-bg video{width:100%;height:100%;object-fit:cover;opacity:.35}
 .hero-bg::after{content:'';position:absolute;inset:0;z-index:2;background:linear-gradient(to right,rgba(10,10,10,.3) 0%,rgba(10,10,10,.7) 40%,rgba(10,10,10,.5) 55%,rgba(10,10,10,.8) 80%,var(--bg) 100%)}
 .hero-bg::before{content:'';position:absolute;inset:0;z-index:3;background:linear-gradient(to bottom,rgba(10,10,10,.5) 0%,transparent 20%,transparent 60%,rgba(10,10,10,.6) 80%,var(--bg) 100%)}
@@ -211,6 +211,8 @@ section{padding:8rem 3rem}
   .nav-links.open{right:0}
   .nav-links a{font-size:1rem;letter-spacing:.3em}
   section{padding:4rem 1.2rem}
+  .hero-img-right{display:none}
+  .hero-img-left{width:100%;opacity:.4;-webkit-mask-image:none;mask-image:none}
   .hero-logo{width:min(320px,80vw)}
   .hero-sub{font-size:.8rem;letter-spacing:.3em}
   .hero-cta{flex-direction:column;align-items:center;gap:.8rem}
