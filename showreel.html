@@ -155,7 +155,7 @@ section{padding:7rem 3rem}
   <div class="vid-grid">
     <div class="vid-card rv">
       <div class="vid-wrap" data-yt="772UldbHQjs">
-        <img src="https://img.youtube.com/vi/772UldbHQjs/maxresdefault.jpg" alt="Parachute Ad" onerror="this.src='sr_stage.jpg'" class="vid-thumb">
+        <img src="thumb_parachute.jpg" alt="Parachute Ad" class="vid-thumb">
         <div class="vid-play"><svg viewBox="0 0 68 48" width="52" height="36"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24L27 14v20" fill="white"/></svg></div>
       </div>
       <div class="vid-info"><h3>Parachute</h3><p>Commercial — Music Production</p></div>
@@ -169,14 +169,14 @@ section{padding:7rem 3rem}
     </div>
     <div class="vid-card rv">
       <div class="vid-wrap" data-yt="REPLACE_HYUNDAI_ID">
-        <img src="sr_stage.jpg" alt="Hyundai" class="vid-thumb">
+        <img src="thumb_hyundai.jpg" alt="Hyundai" class="vid-thumb" style="object-fit:contain;background:#fff">
         <div class="vid-play"><svg viewBox="0 0 68 48" width="52" height="36"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24L27 14v20" fill="white"/></svg></div>
       </div>
       <div class="vid-info"><h3>Hyundai</h3><p>Monthly Service Ad — Music Production</p></div>
     </div>
     <div class="vid-card rv">
       <div class="vid-wrap" data-yt="REPLACE_AHALIA_ID">
-        <img src="sr_stage.jpg" alt="Ahalia Finforex" class="vid-thumb">
+        <img src="thumb_ahalia.jpg" alt="Ahalia Finforex" class="vid-thumb">
         <div class="vid-play"><svg viewBox="0 0 68 48" width="52" height="36"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24L27 14v20" fill="white"/></svg></div>
       </div>
       <div class="vid-info"><h3>Ahalia Finforex</h3><p>Gold Loan Ad — Music Production</p></div>
@@ -205,7 +205,7 @@ section{padding:7rem 3rem}
     <div class="cd">
       <span style="font-weight:500">Vishnu Das</span>
       <a href="tel:+919447418982">+91 94474 18982</a>
-      <a href="mailto:hellovishnudas&#64;gmail.com">hellovishnudas&#64;gmail.com</a>
+      <a id="contact-email" style="border-bottom:1px solid var(--bl);padding-bottom:.2rem;transition:all .3s;cursor:pointer"></a>
     </div>
     <div class="cs">
       <a href="https://www.instagram.com/dasziii/" target="_blank"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg></a>
@@ -266,6 +266,9 @@ document.querySelectorAll('.vid-wrap').forEach(function(wrap){
     wrap.classList.add('playing');
   });
 });
+
+var ce=document.getElementById('contact-email');
+if(ce){var em='hellovishnudas'+'\x40'+'gmail.com';ce.textContent=em;ce.href='mailto:'+em;}
 </script>
 </body>
 </html>
