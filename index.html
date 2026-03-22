@@ -37,6 +37,7 @@ nav.scrolled .nav-logo-full{opacity:1}
 .nav-sub a:hover{color:var(--accent)!important}
 .nav-sub a::after{display:none!important}
 
+
 /* HERO */
 .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative;overflow:hidden}
 .hero-bg{position:absolute;inset:0;z-index:0}
@@ -576,7 +577,7 @@ document.getElementById('yt-fallback')&&document.getElementById('yt-fallback').a
 
 // Build email dynamically to prevent Cloudflare corruption
 var ce=document.getElementById('contact-email');
-if(ce){var em='hellovishnudas'+'\x40'+'gmail.com';ce.textContent=em;ce.href='mailto:'+em;}
+if(ce){var em='thisisdaszi'+'\x40'+'gmail.com';ce.textContent=em;ce.href='mailto:'+em;}
 // Scroll-tracking gold accent on nav
 var navSections=[
   {id:'hero',link:document.querySelector('[data-section="hero"]')},
@@ -599,6 +600,7 @@ function updateNavActive(){
   if(current&&current.link)current.link.classList.add('nav-active');
 }
 window.addEventListener('scroll',updateNavActive);
+
 
 </script>
 </body>
