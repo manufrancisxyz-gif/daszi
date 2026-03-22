@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0a0a0a;--fg:#e8e4de;--white:#fff;--muted:#5a5a5a;--muted-light:#8a8a8a;--card:#0f0f0f;--border:#1a1a1a;--border-light:#2a2a2a}
+:root{--bg:#0a0a0a;--fg:#e8e4de;--white:#fff;--muted:#5a5a5a;--muted-light:#8a8a8a;--card:#0f0f0f;--border:#1a1a1a;--border-light:#2a2a2a;--accent:#c8a44e}
 html{scroll-behavior:smooth;font-size:17px}
 body{background:var(--bg);color:var(--fg);font-family:'Instrument Sans',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 ::selection{background:var(--white);color:#000}
@@ -24,9 +24,18 @@ nav.scrolled .nav-logo-d{opacity:0}
 nav.scrolled .nav-logo-full{opacity:1}
 .nav-links{display:flex;gap:2.5rem}
 .nav-links a{font-size:.8rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted-light);font-weight:500;transition:color .3s;position:relative}
-.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--white);transition:width .4s}
-.nav-links a:hover{color:var(--white)}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--accent);transition:width .5s cubic-bezier(.23,1,.32,1)}
+.nav-links a:hover{color:var(--accent)}
 .nav-links a:hover::after{width:100%}
+.nav-active{color:var(--accent)!important}
+.nav-active::after{width:100%!important;background:var(--accent)!important}
+.nav-dropdown{position:relative;display:flex;align-items:center}
+.nav-sub{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(8px);padding:.8rem 1.2rem;display:flex;gap:1.5rem;opacity:0;visibility:hidden;transition:all .35s cubic-bezier(.23,1,.32,1);white-space:nowrap;background:rgba(10,10,10,.95);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:4px}
+.nav-dropdown:hover .nav-sub{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+.nav-sub::before{content:'';position:absolute;top:-12px;left:0;right:0;height:12px}
+.nav-sub a{font-size:.65rem!important;letter-spacing:.2em;color:var(--muted-light)!important;padding:0;transition:color .3s!important}
+.nav-sub a:hover{color:var(--accent)!important}
+.nav-sub a::after{display:none!important}
 
 /* HERO */
 .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative;overflow:hidden}
@@ -182,8 +191,14 @@ section{padding:8rem 3rem}
 .video-fallback:hover .yt-play-btn{transform:scale(1.1)}
 
 @keyframes heroIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-.reveal{opacity:0;transform:translateY(25px);transition:opacity .9s ease-out,transform .9s ease-out}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
 .reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-left{opacity:0;transform:translateX(-40px);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-right{opacity:0;transform:translateX(40px);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
+.reveal-right.visible{opacity:1;transform:translateX(0)}
+.reveal-scale{opacity:0;transform:scale(.95);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
+.reveal-scale.visible{opacity:1;transform:scale(1)}
 .reveal-delay-1{transition-delay:.15s}
 .reveal-delay-2{transition-delay:.3s}
 
@@ -266,18 +281,16 @@ section{padding:8rem 3rem}
     <span></span><span></span><span></span>
   </div>
   <div class="nav-links" id="navLinks">
-    <a href="#music">Music</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
+    <a href="index.html" class="nav-active" data-section="hero">Home</a>
+    <a href="#music" data-section="music">Music</a>
     <a href="latest.html">Latest</a>
-    <a href="showreel.html">Showreel</a>
-    <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank">Spotify</a>
-    <a href="https://www.youtube.com/@daszi" target="_blank">YouTube</a>
+    <div class="nav-dropdown"><a href="showreel.html">Showreel</a><div class="nav-sub"><a href="showreel.html#bio">About</a><a href="showreel.html#clients">Client Work</a><a href="showreel.html#films">Films</a></div></div>
+    <a href="#contact" data-section="contact">Contact</a>
   </div>
 </nav>
 
 <!-- HERO — stage photo with logo -->
-<section class="hero">
+<section class="hero" id="hero">
   <div class="hero-bg">
     <img src="daszi_mic_bw.jpg" alt="" class="hero-img-left">
     <img src="daszi_dj_bw.jpg" alt="" class="hero-img-right">
@@ -310,8 +323,8 @@ section{padding:8rem 3rem}
   </div>
   <div class="music-inner">
     <div class="reveal" style="text-align:center">
-      <p class="section-num">01</p>
-      <h2 class="section-title">Discography</h2>
+      <p class="section-num" style="transition-delay:.1s">01</p>
+      <h2 class="section-title" style="transition-delay:.2s">Discography</h2>
     </div>
 
     <!-- ALBUMS -->
@@ -319,7 +332,7 @@ section{padding:8rem 3rem}
       <p class="section-num" style="margin-bottom:.3rem">Albums &amp; EPs</p>
     </div>
     <div class="albums-row">
-      <a href="https://daszi.bandcamp.com/album/ft-nature" target="_blank" class="album-feature reveal">
+      <a href="https://daszi.bandcamp.com/album/ft-nature" target="_blank" class="album-feature reveal-scale">
         <div class="album-feature-art">
           <img src="ft_nature_art.jpg" alt="Ft Nature">
           <div class="tile-overlay"></div>
@@ -436,8 +449,8 @@ section{padding:8rem 3rem}
 
 <!-- PHOTO BREAK — DJ closeup + spotlight portrait side by side -->
 <div class="photo-duo" style="position:relative">
-  <div class="photo-cell"><img src="daszi_dj_closeup.jpg" alt="daszi live"></div>
-  <div class="photo-cell"><img src="daszi_spotlight.jpg" alt="daszi"></div>
+  <div class="photo-cell reveal-left"><img src="daszi_dj_closeup.jpg" alt="daszi live"></div>
+  <div class="photo-cell reveal-right"><img src="daszi_spotlight.jpg" alt="daszi"></div>
 </div>
 
 <!-- PHOTO BREAK — Red portrait + live setup duo -->
@@ -455,12 +468,12 @@ section{padding:8rem 3rem}
 <section class="about-section" id="about">
   <div class="reveal"><p class="section-num">02</p><h2 class="section-title">About <em>daszi</em></h2></div>
   <div class="about-grid">
-    <div class="about-img-wrap reveal">
+    <div class="about-img-wrap reveal-left">
       <div class="about-img">
         <img src="daszi_portrait.jpg" alt="daszi" style="object-position:center 20%">
       </div>
     </div>
-    <div class="about-text reveal reveal-delay-1">
+    <div class="about-text reveal-right">
       <p>Kerala-based composer and music producer. daszi creates fresh, rich-sounding music that weaves together folk and traditional sounds with contemporary production — bridging cultures through immersive sonic experiences.</p>
       <p>From archiving the musical heritage of forests like Attappadi and Karuvanchal to collaborating with artists across the Indian underground, daszi's work sits at the intersection of experimental, ambient, psychedelic, and folktronic music. Live performances, music videos, and visualizers amplify every emotion woven into the sound.</p>
       <p>A wanderlust of sounds. Genre: not found.</p>
@@ -520,7 +533,7 @@ window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.pag
 navToggle.addEventListener('click',()=>{navToggle.classList.toggle('active');navLinks.classList.toggle('open')});
 navLinks.querySelectorAll('a').forEach(a=>{a.addEventListener('click',()=>{navToggle.classList.remove('active');navLinks.classList.remove('open')})});
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale').forEach(el=>obs.observe(el));
 document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
 document.getElementById('yt-fallback')?.addEventListener('click',function(e){
   e.preventDefault();
@@ -564,6 +577,29 @@ document.getElementById('yt-fallback')&&document.getElementById('yt-fallback').a
 // Build email dynamically to prevent Cloudflare corruption
 var ce=document.getElementById('contact-email');
 if(ce){var em='hellovishnudas'+'\x40'+'gmail.com';ce.textContent=em;ce.href='mailto:'+em;}
+// Scroll-tracking gold accent on nav
+var navSections=[
+  {id:'hero',link:document.querySelector('[data-section="hero"]')},
+  {id:'music',link:document.querySelector('[data-section="music"]')},
+  {id:'contact',link:document.querySelector('[data-section="contact"]')}
+];
+function updateNavActive(){
+  var scrollY=window.pageYOffset;
+  var current=navSections[0];
+  navSections.forEach(function(s){
+    var el=document.getElementById(s.id);
+    if(el){
+      var top=el.getBoundingClientRect().top+scrollY-200;
+      if(scrollY>=top)current=s;
+    }
+  });
+  navSections.forEach(function(s){
+    if(s.link)s.link.classList.remove('nav-active');
+  });
+  if(current&&current.link)current.link.classList.add('nav-active');
+}
+window.addEventListener('scroll',updateNavActive);
+
 </script>
 </body>
 </html>
