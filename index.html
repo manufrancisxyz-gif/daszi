@@ -258,6 +258,7 @@ section{padding:8rem 3rem}
     <a href="#music">Music</a>
     <a href="#about">About</a>
     <a href="#contact">Contact</a>
+    <a href="showreel.html">Showreel</a>
     <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank">Spotify</a>
     <a href="https://www.youtube.com/@daszi" target="_blank">YouTube</a>
   </div>
@@ -477,8 +478,8 @@ section{padding:8rem 3rem}
     <p class="section-num">03</p>
     <h2 class="section-title"><em>Get in Touch</em></h2>
     <p style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--muted-light);font-weight:300;margin-bottom:1.5rem">For bookings, collaborations &amp; enquiries</p>
-    <a href="mailto:example@example.com" style="font-size:1.1rem;color:var(--fg);letter-spacing:.1em;border-bottom:1px solid var(--border-light);padding-bottom:.3rem;transition:border-color .3s">example@example.com</a>
-    <p style="margin-top:1.2rem;font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted-light);font-weight:300">+91 98765 43210</p>
+    <a href="mailto:hellovishnudas@gmail.com" style="font-size:1.1rem;color:var(--fg);letter-spacing:.1em;border-bottom:1px solid var(--border-light);padding-bottom:.3rem;transition:border-color .3s">hellovishnudas@gmail.com</a>
+    <p style="margin-top:1.2rem;font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted-light);font-weight:300">+91 94474 18982</p>
   </div>
 </section>
 
@@ -531,12 +532,4 @@ if(bgVideo){
   document.addEventListener('touchstart',tryPlay,{once:true});
   document.addEventListener('scroll',tryPlay,{once:true});
   document.addEventListener('click',tryPlay,{once:true});
-  // Also try when video section becomes visible
-  const vidObs=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{if(e.isIntersecting){tryPlay();vidObs.unobserve(e.target)}});
-  },{threshold:.1});
-  vidObs.observe(bgVideo);
-}
-</script>
-</body>
-</html>
+  // Also try when video section 
