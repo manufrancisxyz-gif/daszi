@@ -183,8 +183,8 @@ section{padding:8rem 3rem}
 .btn-outline:hover{border-color:var(--white);color:var(--white)}
 
 /* VIDEOS CAROUSEL */
-.videos-section{border-top:1px solid var(--border)}
-.vid-carousel{position:relative;width:100%;max-width:1200px;margin:0 auto;aspect-ratio:16/9}
+.videos-section{border-top:1px solid var(--border);overflow:hidden}
+.vid-carousel{position:relative;width:100%;max-width:1200px;margin:0 auto;aspect-ratio:16/9;overflow:visible}
 .vid-slide{position:absolute;top:0;width:68%;aspect-ratio:16/9;overflow:hidden;background:#000;border-radius:8px;transition:all .7s cubic-bezier(.23,1,.32,1);opacity:0;transform:scale(.82);filter:blur(3px);cursor:pointer}
 .vid-slide.pos-center{left:16%;opacity:1;transform:scale(1);filter:blur(0);z-index:3;box-shadow:0 10px 60px rgba(0,0,0,.5)}
 .vid-slide.pos-left{left:-12%;opacity:.35;transform:scale(.82);z-index:1}
@@ -192,12 +192,14 @@ section{padding:8rem 3rem}
 .vid-slide img{width:100%;height:100%;object-fit:cover;filter:brightness(.55);transition:filter .4s}
 .vid-slide.pos-center img{filter:brightness(.7)}
 .vid-slide.pos-center:hover img{filter:brightness(.4)}
+.vid-slide iframe{position:absolute;inset:0;width:100%;height:100%;z-index:5;border:none}
+.vid-slide.playing img,.vid-slide.playing .vid-slide-play{display:none}
 .vid-slide iframe{position:absolute;inset:0;width:100%;height:100%;z-index:3}
-.vid-slide.playing img,.vid-slide.playing .vid-slide-play,.vid-slide.playing .vid-slide-title{display:none}
+.vid-slide.playing img,.vid-slide.playing .vid-slide-play,.vid-slide.playing .vid-slide-title{position:absolute;visibility:hidden;pointer-events:none}
 .vid-slide-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;transition:transform .3s}
 .vid-slide:hover .vid-slide-play{transform:scale(1.1)}
 .vid-slide-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted-light);font-weight:300;letter-spacing:.1em;text-align:center;padding:.8rem 0 0;opacity:0;transition:opacity .7s}
-.vid-slide-title{display:none}
+.vid-slide-title{position:absolute;visibility:hidden;pointer-events:none}
 .vid-track-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--fg);font-weight:300;letter-spacing:.1em;text-align:center;padding:1.2rem 0 .5rem;min-height:3rem;transition:opacity .4s}
 .vid-track-name.fade{opacity:0}
 .vid-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;background:rgba(10,10,10,.6);border:1px solid rgba(255,255,255,.15);border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;backdrop-filter:blur(10px)}
@@ -484,8 +486,9 @@ section{padding:8rem 3rem}
     </div>
     <button class="vid-arrow vid-arrow-left" id="vidPrev"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
     <button class="vid-arrow vid-arrow-right" id="vidNext"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg></button>
-    <div class="vid-track-name" id="vidTrackName"></div>
-    <div class="vid-dots" id="vidDots">
+  </div>
+  <div class="vid-track-name" id="vidTrackName"></div>
+  <div class="vid-dots" id="vidDots">
       <span class="vid-dot active"></span><span class="vid-dot"></span><span class="vid-dot"></span><span class="vid-dot"></span>
     </div>
   </div>
@@ -662,7 +665,7 @@ goTo(0);
 // Click slide to play video
 slides.forEach(function(slide){
   slide.addEventListener('click',function(e){
-    if(slide.classList.contains('playing')||!slide.classList.contains('active'))return;
+    if(slide.classList.contains('playing')||!slide.classList.contains('pos-center'))return;
     var ytId=slide.getAttribute('data-yt');
     if(!ytId)return;
     var iframe=document.createElement('iframe');
