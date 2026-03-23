@@ -182,17 +182,31 @@ section{padding:8rem 3rem}
 .btn-outline{background:transparent;color:var(--fg);border:1px solid var(--border-light)}
 .btn-outline:hover{border-color:var(--white);color:var(--white)}
 
-/* VIDEOS */
+/* VIDEOS CAROUSEL */
 .videos-section{border-top:1px solid var(--border)}
-.yt-grid{max-width:1000px;margin:0 auto}
-.yt-card p{font-size:.75rem;color:var(--muted);margin-top:.8rem;letter-spacing:.1em}
-.video-embed{position:relative;width:100%;padding-bottom:56.25%;overflow:hidden;border:1px solid var(--border);border-radius:4px;background:#000}
-.video-embed iframe,.video-embed .video-fallback{position:absolute;top:0;left:0;width:100%;height:100%}
-.video-fallback{display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2}
-.video-fallback img{width:100%;height:100%;object-fit:cover;filter:brightness(.7);transition:filter .3s}
-.video-fallback:hover img{filter:brightness(.9)}
-.yt-play-btn{position:absolute;z-index:3;transition:transform .3s}
-.video-fallback:hover .yt-play-btn{transform:scale(1.1)}
+.vid-carousel{position:relative;width:100%;max-width:1200px;margin:0 auto;aspect-ratio:16/9}
+.vid-slide{position:absolute;top:0;width:68%;aspect-ratio:16/9;overflow:hidden;background:#000;border-radius:8px;transition:all .7s cubic-bezier(.23,1,.32,1);opacity:0;transform:scale(.82);filter:blur(3px);cursor:pointer}
+.vid-slide.pos-center{left:16%;opacity:1;transform:scale(1);filter:blur(0);z-index:3;box-shadow:0 10px 60px rgba(0,0,0,.5)}
+.vid-slide.pos-left{left:-12%;opacity:.35;transform:scale(.82);z-index:1}
+.vid-slide.pos-right{left:44%;opacity:.35;transform:scale(.82);z-index:1}
+.vid-slide img{width:100%;height:100%;object-fit:cover;filter:brightness(.55);transition:filter .4s}
+.vid-slide.pos-center img{filter:brightness(.7)}
+.vid-slide.pos-center:hover img{filter:brightness(.4)}
+.vid-slide iframe{position:absolute;inset:0;width:100%;height:100%;z-index:3}
+.vid-slide.playing img,.vid-slide.playing .vid-slide-play,.vid-slide.playing .vid-slide-title{display:none}
+.vid-slide-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;transition:transform .3s}
+.vid-slide:hover .vid-slide-play{transform:scale(1.1)}
+.vid-slide-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted-light);font-weight:300;letter-spacing:.1em;text-align:center;padding:.8rem 0 0;opacity:0;transition:opacity .7s}
+.vid-slide-title{display:none}
+.vid-track-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--fg);font-weight:300;letter-spacing:.1em;text-align:center;padding:1.2rem 0 .5rem;min-height:3rem;transition:opacity .4s}
+.vid-track-name.fade{opacity:0}
+.vid-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;background:rgba(10,10,10,.6);border:1px solid rgba(255,255,255,.15);border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;backdrop-filter:blur(10px)}
+.vid-arrow:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)}
+.vid-arrow-left{left:1.5rem}
+.vid-arrow-right{right:1.5rem}
+.vid-dots{display:flex;gap:.5rem;justify-content:center;padding:1.2rem 0}
+.vid-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);cursor:pointer;transition:all .4s}
+.vid-dot.active{background:var(--white);transform:scale(1.2)}
 
 @keyframes heroIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
 .reveal{opacity:0;transform:translateY(30px);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
@@ -250,6 +264,17 @@ section{padding:8rem 3rem}
   .photo-duo{grid-template-columns:1fr}
   .photo-duo .photo-cell{height:30vh}
   .videos-section{padding:4rem 1.2rem}
+  .videos-section{padding:4rem 0}
+  .vid-slide{width:80%}
+  .vid-slide.pos-center{left:10%}
+  .vid-slide.pos-left{left:-20%}
+  .vid-slide.pos-right{left:40%}
+  .vid-arrow{width:36px;height:36px}
+  .vid-arrow-left{left:.5rem}
+  .vid-arrow-right{right:.5rem}
+  .vid-arrow{width:36px;height:36px}
+  .vid-arrow-left{left:.5rem}
+  .vid-arrow-right{right:.5rem}
   .yt-grid{grid-template-columns:1fr}
   .listen-cta{flex-direction:column;align-items:center;gap:.8rem}
   .listen-cta .divider{display:none}
@@ -428,26 +453,44 @@ section{padding:8rem 3rem}
   </div>
 </section>
 
-<!-- VIDEOS — YouTube embed -->
+<!-- VIDEOS — Full-width carousel -->
 <section class="videos-section" id="videos">
-  <div class="reveal">
+  <div class="reveal" style="text-align:center">
     <p class="section-num">—</p>
     <h2 class="section-title"><em>Watch</em></h2>
   </div>
-  <div class="yt-latest reveal">
-    <div class="yt-grid">
-      <div class="yt-card">
-        <div class="video-embed" id="yt-player">
-          <a href="https://youtu.be/TZY5K9YQfiA" target="_blank" class="video-fallback" id="yt-fallback">
-            <img src="https://img.youtube.com/vi/TZY5K9YQfiA/maxresdefault.jpg" alt="daszi - Watch on YouTube" onerror="this.src='daszi_stage.jpg'">
-            <div class="yt-play-btn"><svg viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24L27 14v20" fill="white"/></svg></div>
-          </a>
-        </div>
+  <div class="vid-carousel reveal" id="vidCarousel">
+    <div class="vid-slides" id="vidSlides">
+      <div class="vid-slide" data-yt="TZY5K9YQfiA">
+        <img src="https://img.youtube.com/vi/TZY5K9YQfiA/maxresdefault.jpg" alt="Kumbasaram" onerror="this.src='daszi_stage.jpg'">
+        <div class="vid-slide-play"><svg viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24L27 14v20" fill="white"/></svg></div>
+        <div class="vid-slide-title">Kumbasaram — STIC &amp; daszi</div>
+      </div>
+      <div class="vid-slide" data-yt="GDaYIIxrwjM">
+        <img src="https://img.youtube.com/vi/GDaYIIxrwjM/maxresdefault.jpg" alt="KILIYO" onerror="this.src='daszi_stage.jpg'">
+        <div class="vid-slide-play"><svg viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24L27 14v20" fill="white"/></svg></div>
+        <div class="vid-slide-title">KILIYO — daszi x JORJ.</div>
+      </div>
+      <div class="vid-slide" data-yt="ez9PQ1J0uUc">
+        <img src="https://img.youtube.com/vi/ez9PQ1J0uUc/maxresdefault.jpg" alt="Somewhere Along the Way" onerror="this.src='daszi_stage.jpg'">
+        <div class="vid-slide-play"><svg viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24L27 14v20" fill="white"/></svg></div>
+        <div class="vid-slide-title">Somewhere Along the Way — daszi</div>
+      </div>
+      <div class="vid-slide" data-yt="_dzsQDbsePc">
+        <img src="https://img.youtube.com/vi/_dzsQDbsePc/maxresdefault.jpg" alt="Welcome to Thiruvizha" onerror="this.src='daszi_stage.jpg'">
+        <div class="vid-slide-play"><svg viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24L27 14v20" fill="white"/></svg></div>
+        <div class="vid-slide-title">Welcome to Thiruvizha — daszi x RAK</div>
       </div>
     </div>
-    <div style="margin-top:2rem;text-align:center" class="reveal">
-      <a href="https://www.youtube.com/@daszi" target="_blank" class="btn btn-outline">View All on YouTube</a>
+    <button class="vid-arrow vid-arrow-left" id="vidPrev"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button class="vid-arrow vid-arrow-right" id="vidNext"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg></button>
+    <div class="vid-track-name" id="vidTrackName"></div>
+    <div class="vid-dots" id="vidDots">
+      <span class="vid-dot active"></span><span class="vid-dot"></span><span class="vid-dot"></span><span class="vid-dot"></span>
     </div>
+  </div>
+  <div style="margin-top:2rem;text-align:center" class="reveal">
+    <a href="https://www.youtube.com/@daszi" target="_blank" class="btn btn-outline">View All on YouTube</a>
   </div>
 </section>
 
@@ -539,18 +582,7 @@ navLinks.querySelectorAll('a').forEach(a=>{a.addEventListener('click',()=>{navTo
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale').forEach(el=>obs.observe(el));
 document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
-document.getElementById('yt-fallback')?.addEventListener('click',function(e){
-  e.preventDefault();
-  const container=document.getElementById('yt-player');
-  const iframe=document.createElement('iframe');
-  iframe.src='https://www.youtube.com/embed/TZY5K9YQfiA?autoplay=1';
-  iframe.frameBorder='0';
-  iframe.allow='accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture';
-  iframe.allowFullscreen=true;
-  iframe.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;z-index:5';
-  container.appendChild(iframe);
-  this.style.display='none';
-});
+
 // Mobile video autoplay fallback
 const bgVideo=document.getElementById('bgVideo');
 if(bgVideo){
@@ -565,18 +597,7 @@ if(bgVideo){
   },{threshold:.1});
   vidObs.observe(bgVideo);
 }
-document.getElementById('yt-fallback')&&document.getElementById('yt-fallback').addEventListener('click',function(e){
-  e.preventDefault();
-  var container=document.getElementById('yt-player');
-  var iframe=document.createElement('iframe');
-  iframe.src='https://www.youtube.com/embed/TZY5K9YQfiA?autoplay=1';
-  iframe.frameBorder='0';
-  iframe.allow='accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture';
-  iframe.allowFullscreen=true;
-  iframe.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;z-index:5';
-  container.appendChild(iframe);
-  this.style.display='none';
-});
+
 
 // Build email dynamically to prevent Cloudflare corruption
 var ce=document.getElementById('contact-email');
@@ -604,6 +625,55 @@ function updateNavActive(){
 }
 window.addEventListener('scroll',updateNavActive);
 
+
+// Video carousel
+var slides=document.querySelectorAll('.vid-slide');
+var dots=document.querySelectorAll('.vid-dot');
+var current=0;
+var total=slides.length;
+function goTo(idx){
+  // Stop any playing video
+  slides.forEach(function(s){
+    var iframe=s.querySelector('iframe');
+    if(iframe)s.removeChild(iframe);
+    s.classList.remove('playing');
+    var img=s.querySelector('img');if(img)img.style.display='';
+    var play=s.querySelector('.vid-slide-play');if(play)play.style.display='';
+  });
+  current=((idx%total)+total)%total;
+  var prev=((current-1)%total+total)%total;
+  var next=(current+1)%total;
+  slides.forEach(function(s){s.classList.remove('pos-center','pos-left','pos-right')});
+  slides[current].classList.add('pos-center');
+  slides[prev].classList.add('pos-left');
+  slides[next].classList.add('pos-right');
+  dots.forEach(function(d,i){d.classList.toggle('active',i===current)});
+  var nameEl=document.getElementById('vidTrackName');
+  var titleEl=slides[current].querySelector('.vid-slide-title');
+  if(nameEl&&titleEl){
+    nameEl.classList.add('fade');
+    setTimeout(function(){nameEl.textContent=titleEl.textContent;nameEl.classList.remove('fade')},200);
+  }
+}
+document.getElementById('vidNext').addEventListener('click',function(){goTo(current+1)});
+document.getElementById('vidPrev').addEventListener('click',function(){goTo(current-1)});
+dots.forEach(function(d,i){d.addEventListener('click',function(){goTo(i)})});
+goTo(0);
+// Click slide to play video
+slides.forEach(function(slide){
+  slide.addEventListener('click',function(e){
+    if(slide.classList.contains('playing')||!slide.classList.contains('active'))return;
+    var ytId=slide.getAttribute('data-yt');
+    if(!ytId)return;
+    var iframe=document.createElement('iframe');
+    iframe.src='https://www.youtube.com/embed/'+ytId+'?autoplay=1&rel=0';
+    iframe.frameBorder='0';
+    iframe.allow='accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture';
+    iframe.allowFullscreen=true;
+    slide.appendChild(iframe);
+    slide.classList.add('playing');
+  });
+});
 
 </script>
 </body>
