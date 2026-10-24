@@ -55,12 +55,11 @@ nav.scrolled .nav-logo-full{opacity:1}
 .hero-logo-wrap .hero-logo{display:block}
 .hero-logo.decoding{opacity:0;animation:none}
 .hero-logo-ascii{position:absolute;inset:0;margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--fg);white-space:pre;overflow:hidden;pointer-events:none}
-/* soft-edged left-to-right wipe: logo in behind the edge, ASCII out ahead of it, over the same mask */
-.hero-logo.decoded,.hero-logo-ascii.wiping{-webkit-mask-size:300% 100%;mask-size:300% 100%;animation:logoWipe 1.3s cubic-bezier(.45,0,.25,1) both}
-.hero-logo.decoded{-webkit-mask-image:linear-gradient(90deg,#000 40%,transparent 60%);mask-image:linear-gradient(90deg,#000 40%,transparent 60%);animation-name:logoWipe,logoFocus}
-.hero-logo-ascii.wiping{-webkit-mask-image:linear-gradient(90deg,transparent 40%,#000 60%);mask-image:linear-gradient(90deg,transparent 40%,#000 60%)}
-@keyframes logoWipe{from{-webkit-mask-position:100% 0;mask-position:100% 0}to{-webkit-mask-position:0 0;mask-position:0 0}}
-@keyframes logoFocus{from{filter:blur(6px);opacity:.4}to{filter:blur(0);opacity:1}}
+/* even melt: logo focuses in beneath the ASCII, which holds full strength until halfway so brightness never dips */
+.hero-logo.decoded{animation:logoFocus 1.2s cubic-bezier(.45,0,.55,1) both}
+.hero-logo-ascii.melting{animation:asciiMelt 1.2s cubic-bezier(.45,0,.55,1) both}
+@keyframes logoFocus{from{opacity:0;filter:blur(5px)}to{opacity:1;filter:blur(0)}}
+@keyframes asciiMelt{0%,45%{opacity:1;filter:blur(0)}to{opacity:0;filter:blur(4px)}}
 .hero-sub{margin-top:2rem;font-family:'Cormorant Garamond',serif;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:.5em;color:var(--muted-light);text-transform:lowercase;font-weight:300;animation:heroIn 1.6s .3s cubic-bezier(.23,1,.32,1) both}
 .hero-cta{margin-top:2.5rem;display:flex;gap:1rem;justify-content:center;animation:heroIn 1.6s .5s cubic-bezier(.23,1,.32,1) both}
 .hero-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--muted),transparent);position:absolute;bottom:2.5rem;left:50%;z-index:1;animation:heroIn 1.6s .7s cubic-bezier(.23,1,.32,1) both}
@@ -792,11 +791,11 @@ slides.forEach(function(slide){
   img.src='daszi_dj_bw.jpg';
 })();
 
-// Hero logo: scrambled characters in the logo's shape lock in left to right while a soft wipe hands over to the real logo
+// Hero logo: scrambled characters in the logo's shape lock in, then melt evenly into the real logo
 (function(){
   var logo=document.querySelector('.hero-logo'),pre=document.querySelector('.hero-logo-ascii');
   if(!logo||!pre||!logo.classList.contains('decoding'))return;
-  var glyphs='!#$%&*+=?@01<>/\\|ABDSZX',wipe=function(){logo.classList.remove('decoding');logo.classList.add('decoded');pre.classList.add('wiping')};
+  var glyphs='!#$%&*+=?@01<>/\\|ABDSZX',melt=function(){logo.classList.remove('decoding');logo.classList.add('decoded');pre.classList.add('melting')};
   function go(){
     var w=logo.clientWidth,h=logo.clientHeight,cols=w<400?100:160,rows=Math.max(1,Math.round(cols*h/w*0.5));
     pre.innerHTML='<span>M</span>';pre.style.fontSize='100px';
@@ -804,12 +803,12 @@ slides.forEach(function(slide){
     var cv=document.createElement('canvas');cv.width=cols;cv.height=rows;
     var ctx=cv.getContext('2d',{willReadFrequently:true});ctx.drawImage(logo,0,0,cols,rows);
     var a=ctx.getImageData(0,0,cols,rows).data,on=[],settle=[];
-    for(var i=0;i<cols*rows;i++){on.push(a[i*4+3]>90);settle.push(250+(i%cols)/cols*700+Math.random()*350)}
+    for(var i=0;i<cols*rows;i++){on.push(a[i*4+3]>90);settle.push(200+Math.random()*600)}
     var t0=performance.now(),last=0;
     (function tick(now){
       var t=now-t0;
-      if(t>350&&!logo.classList.contains('decoded'))wipe(); // wipe trails the lock-in front
-      if(t>1800){pre.textContent='';return}
+      if(t>700&&!logo.classList.contains('decoded'))melt(); // most cells have locked by now; stragglers dissolve in the melt
+      if(t>2000){pre.textContent='';return}
       requestAnimationFrame(tick);
       if(now-last<45)return;last=now;
       var out='';
@@ -817,7 +816,7 @@ slides.forEach(function(slide){
       pre.textContent=out;
     })(t0);
   }
-  if(logo.complete&&logo.naturalWidth)go();else{logo.onload=go;logo.onerror=wipe}
+  if(logo.complete&&logo.naturalWidth)go();else{logo.onload=go;logo.onerror=melt}
 })();
 </script>
 </body>
