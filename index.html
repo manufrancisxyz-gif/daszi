@@ -341,7 +341,7 @@ section{padding:8rem 3rem}
       <img class="hero-logo" src="daszi_hero_logo.png" alt="daszi">
       <pre class="hero-logo-ascii" aria-hidden="true"></pre>
     </div>
-    <script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.querySelector('.hero-logo').classList.add('decoding')</script>
+    <script>document.querySelector('.hero-logo').classList.add('decoding')</script>
     <p class="hero-sub">genre : not found</p>
     <div class="hero-cta">
       <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="btn btn-white">Listen Now</a>
@@ -728,9 +728,10 @@ slides.forEach(function(slide){
 });
 
 
-// Decode an image from scrambled ASCII, then melt evenly into the real image beneath it.
+// Decode an image from scrambled ASCII, then melt evenly into the real image beneath it (or, with keep, stay as ASCII).
 // Logos use their alpha as the shape; photos (cover=true) map brightness to characters, cropped like object-fit:cover.
-function asciiReveal(img,pre,cover){
+// instant skips the scramble and draws the settled frame straight away.
+function asciiReveal(img,pre,cover,keep,instant){
   var glyphs='!#$%&*+=?@01<>/\\|ABDSZX',ramp=' .:-=+*#%@',melt=function(){img.classList.remove('decoding');img.classList.add('decoded');pre.classList.add('melting')};
   if(!img.naturalWidth)return melt();
   var w=img.clientWidth,h=img.clientHeight,cols=w<400?100:160,rows=Math.max(1,Math.round(cols*h/w*0.5));
@@ -746,24 +747,29 @@ function asciiReveal(img,pre,cover){
     fin.push(cover?ramp[Math.min(9,Math.round(Math.pow(l,1.3)*12))]:d[i*4+3]>90?'#':' ');
     settle.push(200+Math.random()*600);
   }
-  var t0=performance.now(),last=0;
+  var t0=performance.now()-(instant?1e4:0),last=0;
   (function tick(now){
-    var t=now-t0;
-    if(t>700&&!img.classList.contains('decoded'))melt(); // most cells have locked by now; stragglers dissolve in the melt
-    if(t>2000){pre.textContent='';return}
-    requestAnimationFrame(tick);
-    if(now-last<45)return;last=now;
+    var t=now-t0,settled=keep&&t>850; // every cell has locked by 800ms
+    if(!keep&&t>700&&!img.classList.contains('decoded'))melt(); // most cells have locked by now; stragglers dissolve in the melt
+    if(!keep&&t>2000){pre.textContent='';return}
+    if(!settled){requestAnimationFrame(tick);if(now-last<45)return}
+    last=now;
     var out='';
     for(var y=0;y<rows;y++){for(var x=0;x<cols;x++){var j=y*cols+x;out+=fin[j]===' '?' ':t>settle[j]?fin[j]:glyphs[Math.random()*glyphs.length|0]}out+='\n'}
     pre.textContent=out;
-  })(t0);
+  })(performance.now());
 }
 function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load',fn);img.addEventListener('error',fn)}}
 
-// Hero logo decodes on load (the inline script beside it already hid it)
+// Hero logo decodes on load and stays as ASCII (the inline script beside it hid the image)
 (function(){
   var logo=document.querySelector('.hero-logo'),pre=document.querySelector('.hero-logo-ascii');
-  if(logo&&pre&&logo.classList.contains('decoding'))whenLoaded(logo,function(){asciiReveal(logo,pre,false)});
+  if(!logo||!pre)return;
+  var still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  whenLoaded(logo,function(){
+    asciiReveal(logo,pre,false,true,still);
+    window.addEventListener('resize',function(){asciiReveal(logo,pre,false,true,true)});
+  });
 })();
 
 // Wide DJ photo decodes the first time it scrolls into view
