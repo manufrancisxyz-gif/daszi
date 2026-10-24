@@ -58,6 +58,9 @@ nav.scrolled .nav-logo-full{opacity:1}
 /* even melt: logo focuses in beneath the ASCII, which holds full strength until halfway so brightness never dips */
 .hero-logo.decoded,.ascii-photo.decoded{animation:logoFocus 1.2s cubic-bezier(.45,0,.55,1) both}
 .hero-logo-ascii.melting,.ascii-photo-pre.melting{animation:asciiMelt 1.2s cubic-bezier(.45,0,.55,1) both}
+/* kept-ASCII logo: the original fades in faintly beneath the characters */
+.hero-logo.blended{animation:logoBlend 1.2s cubic-bezier(.45,0,.55,1) both}
+@keyframes logoBlend{from{opacity:0;filter:blur(5px)}to{opacity:.35;filter:blur(0)}}
 @keyframes logoFocus{from{opacity:0;filter:blur(5px)}to{opacity:1;filter:blur(0)}}
 @keyframes asciiMelt{0%,45%{opacity:1;filter:blur(0)}to{opacity:0;filter:blur(4px)}}
 .hero-sub{margin-top:2rem;font-family:'Cormorant Garamond',serif;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:.5em;color:var(--muted-light);text-transform:lowercase;font-weight:300;animation:heroIn 1.6s .3s cubic-bezier(.23,1,.32,1) both}
@@ -750,7 +753,7 @@ function asciiReveal(img,pre,cover,keep,instant){
   var t0=performance.now()-(instant?1e4:0),last=0;
   (function tick(now){
     var t=now-t0,settled=keep&&t>850; // every cell has locked by 800ms
-    if(!keep&&t>700&&!img.classList.contains('decoded'))melt(); // most cells have locked by now; stragglers dissolve in the melt
+    if(t>700&&img.classList.contains('decoding')){if(keep){img.classList.remove('decoding');img.classList.add('blended')}else melt()} // most cells have locked by now
     if(!keep&&t>2000){pre.textContent='';return}
     if(!settled){requestAnimationFrame(tick);if(now-last<45)return}
     last=now;
