@@ -758,6 +758,36 @@ function asciiReveal(img,pre,cover){
 }
 function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load',fn);img.addEventListener('error',fn)}}
 
+// Tagline: characters shuffle through ASCII glyphs and settle into "genre : not found" as it fades up.
+// Each character sits in a slot fixed to its final width, so the centred line doesn't jitter while shuffling.
+(function(){
+  var el=document.querySelector('.hero-sub');
+  if(!el||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var text=el.textContent,glyphs='abcdefghijklmnopqrstuvwxyz#%&*+=<>/\\|?!';
+  el.setAttribute('aria-label',text);
+  (document.fonts?document.fonts.ready:Promise.resolve()).then(function(){
+    el.innerHTML='';
+    var slots=text.split('').map(function(ch,i){
+      var s=document.createElement('span');s.textContent=ch;s.setAttribute('aria-hidden','true');el.appendChild(s);
+      return {el:s,ch:ch,at:250+i*55+Math.random()*250};
+    });
+    slots.forEach(function(s){s.el.style.cssText='display:inline-block;text-align:center;width:'+s.el.getBoundingClientRect().width+'px'});
+    var t0=performance.now(),last=0;
+    (function tick(now){
+      var t=now-t0,busy=false;
+      if(now-last>=55){
+        last=now;
+        slots.forEach(function(s){
+          if(s.ch===' ')return;
+          if(t<s.at){busy=true;s.el.textContent=glyphs[Math.random()*glyphs.length|0]}
+          else s.el.textContent=s.ch;
+        });
+      }else busy=true;
+      if(busy)requestAnimationFrame(tick);else el.textContent=text; // settled: back to plain text
+    })(t0);
+  });
+})();
+
 // Hero intro: the hero ripples like a water surface, spreading out from the star at the heart of the logo's S.
 // The hero's layers (photos, their CSS masks, the two gradient overlays, the logo) are redrawn onto a canvas,
 // then a WebGL shader refracts that image. Keep paintHero in step with the .hero-* CSS above.
