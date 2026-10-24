@@ -58,9 +58,9 @@ nav.scrolled .nav-logo-full{opacity:1}
 /* even melt: logo focuses in beneath the ASCII, which holds full strength until halfway so brightness never dips */
 .hero-logo.decoded,.ascii-photo.decoded{animation:logoFocus 1.2s cubic-bezier(.45,0,.55,1) both}
 .hero-logo-ascii.melting,.ascii-photo-pre.melting{animation:asciiMelt 1.2s cubic-bezier(.45,0,.55,1) both}
-/* kept-ASCII logo: the original fades in faintly beneath the characters */
-.hero-logo.blended{animation:logoBlend 1.2s cubic-bezier(.45,0,.55,1) both}
-@keyframes logoBlend{from{opacity:0;filter:blur(5px)}to{opacity:.55;filter:blur(0)}}
+/* kept-ASCII logo: the original focuses in to 55% beneath the characters (~1.2s), then slowly fills to solid (~6s) */
+.hero-logo.blended{animation:logoBlend 7.2s linear both}
+@keyframes logoBlend{0%{opacity:0;filter:blur(5px);animation-timing-function:cubic-bezier(.45,0,.55,1)}17%{opacity:.55;filter:blur(0);animation-timing-function:cubic-bezier(.4,0,.6,1)}100%{opacity:1;filter:blur(0)}}
 @keyframes logoFocus{from{opacity:0;filter:blur(5px)}to{opacity:1;filter:blur(0)}}
 @keyframes asciiMelt{0%,45%{opacity:1;filter:blur(0)}to{opacity:0;filter:blur(4px)}}
 .hero-sub{margin-top:2rem;font-family:'Cormorant Garamond',serif;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:.5em;color:var(--muted-light);text-transform:lowercase;font-weight:300;animation:heroIn 1.6s .3s cubic-bezier(.23,1,.32,1) both}
