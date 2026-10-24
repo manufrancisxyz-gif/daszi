@@ -758,13 +758,13 @@ function asciiReveal(img,pre,cover){
 }
 function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load',fn);img.addEventListener('error',fn)}}
 
-// Hero intro: a clear droplet falls onto the S of the logo and the hero ripples like a water surface.
+// Hero intro: the hero ripples like a water surface, spreading out from the S of the logo.
 // The hero's layers (photos, their CSS masks, the two gradient overlays, the logo) are redrawn onto a canvas,
 // then a WebGL shader refracts that image. Keep paintHero in step with the .hero-* CSS above.
 (function(){
   var hero=document.querySelector('.hero'),bg=document.querySelector('.hero-bg'),logo=document.querySelector('.hero-logo');
   if(!hero||!bg||!logo||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  var FALL=.55,RIPPLE=3.4; // seconds
+  var RIPPLE=3.4; // seconds
 
   function cover(ctx,img,w,h,px,py){ // object-fit:cover with object-position px/py (0..1)
     var k=Math.max(w/img.naturalWidth,h/img.naturalHeight),sw=w/k,sh=h/k;
@@ -796,31 +796,24 @@ function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load
     ctx.fillStyle=grad(ctx,0,0,0,H,[[0,'rgba(10,10,10,.5)'],[.2,'rgba(10,10,10,0)'],[.6,'rgba(10,10,10,0)'],[.8,'rgba(10,10,10,.6)'],[1,'#0a0a0a']]);ctx.fillRect(0,0,W,H); // .hero-bg::before
     var lr=logo.getBoundingClientRect();
     ctx.globalAlpha=+getComputedStyle(logo.parentNode).opacity;ctx.drawImage(logo,lr.left-hr.left,lr.top-hr.top,lr.width,lr.height);
-    return {canvas:c,hit:[lr.left-hr.left+lr.width*.535,lr.top-hr.top+lr.height*.16],drop:lr.width/42}; // top of the S's curve, measured from the PNG's alpha
+    return {canvas:c,hit:[lr.left-hr.left+lr.width*.535,lr.top-hr.top+lr.height*.16],scale:lr.width/42}; // top of the S's curve, measured from the PNG's alpha
   }
 
   var FRAG=[
     'precision highp float;',
-    'uniform sampler2D tex;uniform vec2 res,hit;uniform float t,dropR,fall;varying vec2 uv;',
+    'uniform sampler2D tex;uniform vec2 res,hit;uniform float t,scale;varying vec2 uv;',
     'void main(){',
-    '  vec2 p=uv*res,off=vec2(0.);float light=0.,glint=0.;',
-    '  if(t<0.){', // falling droplet: a small refracting lens
-    '    float k=-t/fall;vec2 c=hit-vec2(0.,(hit.y+dropR*3.)*k*k);',
-    '    vec2 q=(p-c)/vec2(dropR,dropR*(1.2+.25*(1.-k)));float l=length(q);',
-    '    if(l<1.){float b=sqrt(1.-l*l);off=-(p-c)*.55*b;glint=.18*smoothstep(.65,1.,l)+.5*exp(-12.*dot(q-vec2(-.35,-.4),q-vec2(-.35,-.4)));}',
-    '  }else{',
-    '    vec2 d=p-hit;float r=length(d);vec2 n=r>.001?d/r:vec2(0.);',
-    '    float front=t*max(min(res.x,res.y)*.42,320.),behind=front-r;', // wave front speed scales with the viewport, never crawls on phones
-    '    float amp=dropR*1.9*exp(-t*.85)/(1.+r/650.);', // px of displacement, scaled to the logo; carries across the whole hero
-    '    float env=smoothstep(0.,80.,behind)*exp(-max(behind,0.)/300.);',
-    '    float ph=(r-front)*.055;',
-    '    off=n*sin(ph)*amp*env;',
-    '    light=cos(ph)*amp*env*.022;', // crest slope: brightens what is already lit, never paints the dark
-    '    float s=exp(-r/35.)*exp(-t*7.);off+=n*s*22.;light+=s*.3;', // impact splash
-    '  }',
+    '  vec2 p=uv*res,d=p-hit;float r=length(d);vec2 n=r>.001?d/r:vec2(0.);',
+    '  float front=t*max(min(res.x,res.y)*.42,320.),behind=front-r;', // wave front speed scales with the viewport, never crawls on phones
+    '  float amp=scale*1.9*exp(-t*.85)/(1.+r/650.);', // px of displacement, scaled to the logo; carries across the whole hero
+    '  float env=smoothstep(0.,80.,behind)*exp(-max(behind,0.)/300.);',
+    '  float ph=(r-front)*.055;',
+    '  vec2 off=n*sin(ph)*amp*env;',
+    '  float light=cos(ph)*amp*env*.022;', // crest slope: brightens what is already lit, never paints the dark
+    '  float s=exp(-r/40.)*sin(min(t*9.,3.1416));off+=n*s*scale*1.5;light+=s*.2;', // brief swell at the centre, rising from zero so the swap-in never pops
     '  vec2 o=off/res;',
     '  vec3 col=vec3(texture2D(tex,uv-o*1.04).r,texture2D(tex,uv-o).g,texture2D(tex,uv-o*.96).b);', // faint chromatic edge
-    '  gl_FragColor=vec4(col*(1.+light)+.25*pow(max(light,0.),2.)+glint,1.);',
+    '  gl_FragColor=vec4(col*(1.+light)+.25*pow(max(light,0.),2.),1.);',
     '}'].join('\n');
 
   function run(){
@@ -846,15 +839,15 @@ function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load
     gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,scene.canvas);
     var U=function(n){return gl.getUniformLocation(pr,n)};
     gl.uniform2f(U('res'),W,H);gl.uniform2f(U('hit'),scene.hit[0],scene.hit[1]);
-    gl.uniform1f(U('dropR'),scene.drop);gl.uniform1f(U('fall'),FALL);
+    gl.uniform1f(U('scale'),scene.scale);
     var uT=U('t');
     gl.viewport(0,0,cv.width,cv.height);
     // swap in the canvas (identical at rest) and hide the real logo it now draws
-    gl.uniform1f(uT,-FALL);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    gl.uniform1f(uT,0);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
     bg.appendChild(cv);logo.style.visibility='hidden';
     var t0=performance.now();
     (function frame(now){
-      var t=(now-t0)/1000-FALL;
+      var t=(now-t0)/1000;
       if(t>RIPPLE){cv.remove();logo.style.visibility='';return}
       gl.uniform1f(uT,t);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
       requestAnimationFrame(frame);
