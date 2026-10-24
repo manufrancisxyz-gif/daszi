@@ -53,11 +53,11 @@ nav.scrolled .nav-logo-full{opacity:1}
 .hero-logo{width:min(450px,78vw);animation:heroIn 1.6s cubic-bezier(.23,1,.32,1) both}
 .hero-logo-wrap{position:relative;display:inline-block;opacity:.8}
 .hero-logo-wrap .hero-logo{display:block}
-.hero-logo.decoding{opacity:0;animation:none}
-.hero-logo-ascii{position:absolute;inset:0;margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--fg);white-space:pre;overflow:hidden;pointer-events:none}
+.hero-logo.decoding,.ascii-photo.decoding{opacity:0;animation:none}
+.hero-logo-ascii,.ascii-photo-pre{position:absolute;inset:0;margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--fg);white-space:pre;overflow:hidden;pointer-events:none}
 /* even melt: logo focuses in beneath the ASCII, which holds full strength until halfway so brightness never dips */
-.hero-logo.decoded{animation:logoFocus 1.2s cubic-bezier(.45,0,.55,1) both}
-.hero-logo-ascii.melting{animation:asciiMelt 1.2s cubic-bezier(.45,0,.55,1) both}
+.hero-logo.decoded,.ascii-photo.decoded{animation:logoFocus 1.2s cubic-bezier(.45,0,.55,1) both}
+.hero-logo-ascii.melting,.ascii-photo-pre.melting{animation:asciiMelt 1.2s cubic-bezier(.45,0,.55,1) both}
 @keyframes logoFocus{from{opacity:0;filter:blur(5px)}to{opacity:1;filter:blur(0)}}
 @keyframes asciiMelt{0%,45%{opacity:1;filter:blur(0)}to{opacity:0;filter:blur(4px)}}
 .hero-sub{margin-top:2rem;font-family:'Cormorant Garamond',serif;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:.5em;color:var(--muted-light);text-transform:lowercase;font-weight:300;animation:heroIn 1.6s .3s cubic-bezier(.23,1,.32,1) both}
@@ -309,8 +309,6 @@ section{padding:8rem 3rem}
   section{padding:3rem 1rem}
   .album-feature{padding:1rem}
 }
-.ascii-break{background:var(--bg);overflow:hidden;padding:4rem 0;display:flex;justify-content:center}
-#asciiArt{margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;line-height:1;letter-spacing:0;color:var(--fg);white-space:pre;user-select:none}
 </style>
 </head>
 <body>
@@ -561,11 +559,9 @@ section{padding:8rem 3rem}
 
 <!-- PHOTO BREAK — Pioneer DJ wide shot full width -->
 <div class="photo-break photo-full">
-  <img src="daszi_pioneer_wide.jpg" alt="daszi at the decks">
+  <img class="ascii-photo" src="daszi_pioneer_wide.jpg" alt="daszi at the decks">
+  <pre class="ascii-photo-pre" aria-hidden="true"></pre>
 </div>
-
-<!-- ASCII BREAK — DJ B&W photo rendered as live text -->
-<div class="ascii-break" role="img" aria-label="daszi at the decks, drawn in ASCII characters"><pre id="asciiArt" aria-hidden="true"></pre></div>
 
 <!-- ABOUT -->
 <section class="about-section" id="about">
@@ -732,92 +728,55 @@ slides.forEach(function(slide){
 });
 
 
-// ASCII photo: sweeps in along the spotlight's diagonal, then shimmers. ?ascii_t=N renders one frozen frame.
-(function(){
-  var pre=document.getElementById('asciiArt');if(!pre)return;
-  var ramp=' .:-=+*#%@',img=new Image(),lum=[],cols=0,rows=0,start=null,running=false,last=0,mx=-99,my=-99;
-  var still=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var seek=new URLSearchParams(location.search).get('ascii_t');
-  function frame(t){
-    var out='',reveal=t/1800,n=ramp.length-1;
-    for(var y=0;y<rows;y++){
-      for(var x=0;x<cols;x++){
-        var edge=reveal*1.4-(x/cols+y/rows)*0.7;
-        if(edge<0){out+=' ';continue}
-        // scramble at the sweep front; hash instead of Math.random so frames are reproducible
-        if(edge<0.15){var h=Math.imul(x,374761393)+Math.imul(y,668265263)+Math.imul(t/60|0,-2048144777);h=Math.imul(h^h>>>13,1274126177);out+=ramp[((h^h>>>16)>>>0)%ramp.length];continue}
-        var b=lum[y*cols+x],l=b*(1+Math.sin(x*0.15-y*0.1+t*0.002)*0.25); // multiplicative so black stays black
-        var d=(x/cols+y/rows)/2-((t/4500)%1*1.6-0.3);             // light beam sweeping along the spotlight's diagonal every 4.5s
-        var dx=(x-mx)/12,dy=(y-my)/6;                              // pointer spotlight, rows are ~2x taller than cols
-        l+=(Math.exp(-d*d/0.002)*0.45+Math.exp(-(dx*dx+dy*dy))*0.7)*(0.25+b);
-        out+=ramp[Math.max(0,Math.min(n,Math.round(l*n)))];
-      }
-      out+='\n';
-    }
+// Decode an image from scrambled ASCII, then melt evenly into the real image beneath it.
+// Logos use their alpha as the shape; photos (cover=true) map brightness to characters, cropped like object-fit:cover.
+function asciiReveal(img,pre,cover){
+  var glyphs='!#$%&*+=?@01<>/\\|ABDSZX',ramp=' .:-=+*#%@',melt=function(){img.classList.remove('decoding');img.classList.add('decoded');pre.classList.add('melting')};
+  if(!img.naturalWidth)return melt();
+  var w=img.clientWidth,h=img.clientHeight,cols=w<400?100:160,rows=Math.max(1,Math.round(cols*h/w*0.5));
+  pre.innerHTML='<span>M</span>';pre.style.fontSize='100px';
+  pre.style.fontSize=w/cols/(pre.firstChild.getBoundingClientRect().width/100)+'px';pre.style.lineHeight=h/rows+'px'; // pre fills its box, so measure an inline glyph
+  var cv=document.createElement('canvas');cv.width=cols;cv.height=rows;
+  var ctx=cv.getContext('2d',{willReadFrequently:true}),iw=img.naturalWidth,ih=img.naturalHeight;
+  if(cover){var k=Math.max(w/iw,h/ih),sw=w/k,sh=h/k;ctx.drawImage(img,(iw-sw)/2,(ih-sh)/2,sw,sh,0,0,cols,rows)}
+  else ctx.drawImage(img,0,0,cols,rows);
+  var d=ctx.getImageData(0,0,cols,rows).data,fin=[],settle=[],i,l;
+  for(i=0;i<cols*rows;i++){
+    l=(0.2126*d[i*4]+0.7152*d[i*4+1]+0.0722*d[i*4+2])/255;
+    fin.push(cover?ramp[Math.min(9,Math.round(Math.pow(l,1.3)*12))]:d[i*4+3]>90?'#':' ');
+    settle.push(200+Math.random()*600);
+  }
+  var t0=performance.now(),last=0;
+  (function tick(now){
+    var t=now-t0;
+    if(t>700&&!img.classList.contains('decoded'))melt(); // most cells have locked by now; stragglers dissolve in the melt
+    if(t>2000){pre.textContent='';return}
+    requestAnimationFrame(tick);
+    if(now-last<45)return;last=now;
+    var out='';
+    for(var y=0;y<rows;y++){for(var x=0;x<cols;x++){var j=y*cols+x;out+=fin[j]===' '?' ':t>settle[j]?fin[j]:glyphs[Math.random()*glyphs.length|0]}out+='\n'}
     pre.textContent=out;
-  }
-  function build(){
-    var w=pre.parentNode.clientWidth;
-    cols=w<700?80:140;
-    rows=Math.round(cols*img.height/img.width*0.5); // char cells are ~2x taller than wide
-    pre.textContent='M';pre.style.fontSize='100px';
-    pre.style.fontSize=Math.floor(w/cols/(pre.getBoundingClientRect().width/100)*100)/100+'px'; // fit cols to width using the real glyph width
-    var cv=document.createElement('canvas');cv.width=cols;cv.height=rows;
-    var ctx=cv.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,0,0,cols,rows);
-    var d=ctx.getImageData(0,0,cols,rows).data;lum=[];
-    for(var i=0;i<d.length;i+=4)lum.push((0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2])/255);
-    // stretch levels (5th–99.5th percentile) and darken mids so the stage fog falls away and the figure reads
-    var sorted=lum.slice().sort(function(a,b){return a-b}),lo=sorted[lum.length*.05|0],hi=sorted[lum.length*.995|0];
-    lum=lum.map(function(l){return Math.pow(Math.max(0,Math.min(1,(l-lo)/(hi-lo))),1.8)});
-    frame(seek!==null?parseFloat(seek):still?1e4:0);
-  }
-  function loop(now){
-    if(!running)return;
-    requestAnimationFrame(loop);
-    if(now-last<50)return; // ~20fps for a retro feel
-    last=now;if(start===null)start=now;
-    frame(now-start);
-  }
-  img.onload=function(){
-    build();
-    window.addEventListener('resize',build);
-    if(still||seek!==null)return;
-    pre.parentNode.addEventListener('pointermove',function(e){var r=pre.getBoundingClientRect();mx=(e.clientX-r.left)/r.width*cols;my=(e.clientY-r.top)/r.height*rows});
-    pre.parentNode.addEventListener('pointerleave',function(){mx=my=-99});
-    new IntersectionObserver(function(es){
-      running=es[0].isIntersecting;
-      if(running)requestAnimationFrame(loop);
-    },{threshold:.15}).observe(pre.parentNode);
-  };
-  img.src='daszi_dj_bw.jpg';
-})();
+  })(t0);
+}
+function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load',fn);img.addEventListener('error',fn)}}
 
-// Hero logo: scrambled characters in the logo's shape lock in, then melt evenly into the real logo
+// Hero logo decodes on load (the inline script beside it already hid it)
 (function(){
   var logo=document.querySelector('.hero-logo'),pre=document.querySelector('.hero-logo-ascii');
-  if(!logo||!pre||!logo.classList.contains('decoding'))return;
-  var glyphs='!#$%&*+=?@01<>/\\|ABDSZX',melt=function(){logo.classList.remove('decoding');logo.classList.add('decoded');pre.classList.add('melting')};
-  function go(){
-    var w=logo.clientWidth,h=logo.clientHeight,cols=w<400?100:160,rows=Math.max(1,Math.round(cols*h/w*0.5));
-    pre.innerHTML='<span>M</span>';pre.style.fontSize='100px';
-    pre.style.fontSize=w/cols/(pre.firstChild.getBoundingClientRect().width/100)+'px';pre.style.lineHeight=h/rows+'px'; // pre fills the wrap, so measure an inline glyph
-    var cv=document.createElement('canvas');cv.width=cols;cv.height=rows;
-    var ctx=cv.getContext('2d',{willReadFrequently:true});ctx.drawImage(logo,0,0,cols,rows);
-    var a=ctx.getImageData(0,0,cols,rows).data,on=[],settle=[];
-    for(var i=0;i<cols*rows;i++){on.push(a[i*4+3]>90);settle.push(200+Math.random()*600)}
-    var t0=performance.now(),last=0;
-    (function tick(now){
-      var t=now-t0;
-      if(t>700&&!logo.classList.contains('decoded'))melt(); // most cells have locked by now; stragglers dissolve in the melt
-      if(t>2000){pre.textContent='';return}
-      requestAnimationFrame(tick);
-      if(now-last<45)return;last=now;
-      var out='';
-      for(var y=0;y<rows;y++){for(var x=0;x<cols;x++){var i=y*cols+x;out+=!on[i]?' ':t>settle[i]?'#':glyphs[Math.random()*glyphs.length|0]}out+='\n'}
-      pre.textContent=out;
-    })(t0);
-  }
-  if(logo.complete&&logo.naturalWidth)go();else{logo.onload=go;logo.onerror=melt}
+  if(logo&&pre&&logo.classList.contains('decoding'))whenLoaded(logo,function(){asciiReveal(logo,pre,false)});
+})();
+
+// Wide DJ photo decodes the first time it scrolls into view
+(function(){
+  var img=document.querySelector('.ascii-photo'),pre=document.querySelector('.ascii-photo-pre');
+  if(!img||!pre||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  img.classList.add('decoding');
+  var io=new IntersectionObserver(function(es){
+    if(!es[0].isIntersecting)return;
+    io.disconnect();
+    whenLoaded(img,function(){asciiReveal(img,pre,true)});
+  },{threshold:.35});
+  io.observe(img.parentNode);
 })();
 </script>
 </body>
