@@ -53,14 +53,16 @@ nav.scrolled .nav-logo-full{opacity:1}
 .hero-logo{width:min(450px,78vw);animation:heroIn 1.6s cubic-bezier(.23,1,.32,1) both}
 .hero-logo-wrap{position:relative;display:inline-block;opacity:.8}
 .hero-logo-wrap .hero-logo{display:block}
-.hero-logo.decoding,.ascii-photo.decoding{opacity:0;animation:none}
-.hero-logo-ascii,.ascii-photo-pre{position:absolute;inset:0;margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--fg);white-space:pre;overflow:hidden;pointer-events:none}
-/* even melt: logo focuses in beneath the ASCII, which holds full strength until halfway so brightness never dips */
-.hero-logo.decoded,.ascii-photo.decoded{animation:logoFocus 1.2s cubic-bezier(.45,0,.55,1) both}
-.hero-logo-ascii.melting,.ascii-photo-pre.melting{animation:asciiMelt 1.2s cubic-bezier(.45,0,.55,1) both}
-/* kept-ASCII logo: the original focuses in to 55% beneath the characters (~1.2s), then slowly fills to solid (~6s) */
-.hero-logo.blended{animation:logoBlend 7.2s linear both}
-@keyframes logoBlend{0%{opacity:0;filter:blur(5px);animation-timing-function:cubic-bezier(.45,0,.55,1)}17%{opacity:.55;filter:blur(0);animation-timing-function:cubic-bezier(.4,0,.6,1)}100%{opacity:1;filter:blur(0)}}
+.ascii-photo.decoding{opacity:0;animation:none}
+.ascii-photo-pre{position:absolute;inset:0;margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--fg);white-space:pre;overflow:hidden;pointer-events:none}
+/* even melt: photo focuses in beneath the ASCII, which holds full strength until halfway so brightness never dips */
+.ascii-photo.decoded{animation:logoFocus 1.2s cubic-bezier(.45,0,.55,1) both}
+.ascii-photo-pre.melting{animation:asciiMelt 1.2s cubic-bezier(.45,0,.55,1) both}
+/* hero intro: droplet onto the S, then a ripple across the page */
+.drop{position:fixed;z-index:1001;pointer-events:none;transform-origin:50% 100%;will-change:transform,opacity}
+.drop svg{display:block;width:100%;height:100%;overflow:visible}
+.ripple,.ripple-lens{position:fixed;inset:0;z-index:1000;pointer-events:none}
+.ripple-lens{-webkit-backdrop-filter:blur(2px) brightness(1.3);backdrop-filter:blur(2px) brightness(1.3)}
 @keyframes logoFocus{from{opacity:0;filter:blur(5px)}to{opacity:1;filter:blur(0)}}
 @keyframes asciiMelt{0%,45%{opacity:1;filter:blur(0)}to{opacity:0;filter:blur(4px)}}
 .hero-sub{margin-top:2rem;font-family:'Cormorant Garamond',serif;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:.5em;color:var(--muted-light);text-transform:lowercase;font-weight:300;animation:heroIn 1.6s .3s cubic-bezier(.23,1,.32,1) both}
@@ -342,9 +344,7 @@ section{padding:8rem 3rem}
   <div class="hero-content" style="margin-top:0">
     <div class="hero-logo-wrap">
       <img class="hero-logo" src="daszi_hero_logo.png" alt="daszi">
-      <pre class="hero-logo-ascii" aria-hidden="true"></pre>
     </div>
-    <script>document.querySelector('.hero-logo').classList.add('decoding')</script>
     <p class="hero-sub">genre : not found</p>
     <div class="hero-cta">
       <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="btn btn-white">Listen Now</a>
@@ -731,10 +731,9 @@ slides.forEach(function(slide){
 });
 
 
-// Decode an image from scrambled ASCII, then melt evenly into the real image beneath it (or, with keep, stay as ASCII).
+// Decode an image from scrambled ASCII, then melt evenly into the real image beneath it.
 // Logos use their alpha as the shape; photos (cover=true) map brightness to characters, cropped like object-fit:cover.
-// instant skips the scramble and draws the settled frame straight away.
-function asciiReveal(img,pre,cover,keep,instant){
+function asciiReveal(img,pre,cover){
   var glyphs='!#$%&*+=?@01<>/\\|ABDSZX',ramp=' .:-=+*#%@',melt=function(){img.classList.remove('decoding');img.classList.add('decoded');pre.classList.add('melting')};
   if(!img.naturalWidth)return melt();
   var w=img.clientWidth,h=img.clientHeight,cols=w<400?100:160,rows=Math.max(1,Math.round(cols*h/w*0.5));
@@ -750,13 +749,13 @@ function asciiReveal(img,pre,cover,keep,instant){
     fin.push(cover?ramp[Math.min(9,Math.round(Math.pow(l,1.3)*12))]:d[i*4+3]>90?'#':' ');
     settle.push(200+Math.random()*600);
   }
-  var t0=performance.now()-(instant?1e4:0),last=0;
+  var t0=performance.now(),last=0;
   (function tick(now){
-    var t=now-t0,settled=keep&&t>850; // every cell has locked by 800ms
-    if(t>700&&img.classList.contains('decoding')){if(keep){img.classList.remove('decoding');img.classList.add('blended')}else melt()} // most cells have locked by now
-    if(!keep&&t>2000){pre.textContent='';return}
-    if(!settled){requestAnimationFrame(tick);if(now-last<45)return}
-    last=now;
+    var t=now-t0;
+    if(t>700&&img.classList.contains('decoding'))melt(); // most cells have locked by now; stragglers dissolve in the melt
+    if(t>2000){pre.textContent='';return}
+    requestAnimationFrame(tick);
+    if(now-last<45)return;last=now;
     var out='';
     for(var y=0;y<rows;y++){for(var x=0;x<cols;x++){var j=y*cols+x;out+=fin[j]===' '?' ':t>settle[j]?fin[j]:glyphs[Math.random()*glyphs.length|0]}out+='\n'}
     pre.textContent=out;
@@ -764,15 +763,66 @@ function asciiReveal(img,pre,cover,keep,instant){
 }
 function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load',fn);img.addEventListener('error',fn)}}
 
-// Hero logo decodes on load and stays as ASCII (the inline script beside it hid the image)
+// Hero intro: a water droplet falls onto the S of the logo and sends a ripple out across the page
 (function(){
-  var logo=document.querySelector('.hero-logo'),pre=document.querySelector('.hero-logo-ascii');
-  if(!logo||!pre)return;
-  var still=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  whenLoaded(logo,function(){
-    asciiReveal(logo,pre,false,true,still);
-    window.addEventListener('resize',function(){asciiReveal(logo,pre,false,true,true)});
-  });
+  var logo=document.querySelector('.hero-logo');
+  if(!logo||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var NS='http://www.w3.org/2000/svg';
+  function start(){
+    var r=logo.getBoundingClientRect();
+    if(!r.width)return;
+    var hx=r.left+r.width*.535,hy=r.top+r.height*.16; // top of the S's curve, measured from the PNG's alpha
+    var w=Math.max(12,r.width/24),h=w*1.35,drop=document.createElement('div');
+    drop.className='drop';
+    drop.style.cssText='left:'+(hx-w/2)+'px;top:'+(hy-h)+'px;width:'+w+'px;height:'+h+'px';
+    drop.innerHTML='<svg viewBox="0 0 20 27"><defs><linearGradient id="dropFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#bcd4ff" stop-opacity=".35"/></linearGradient></defs>'+
+      '<path d="M10 0C10 0 1 11.5 1 17.5a9 9 0 0 0 18 0C19 11.5 10 0 10 0Z" fill="url(#dropFill)" stroke="#fff" stroke-opacity=".7" stroke-width=".6"/>'+
+      '<ellipse cx="6.5" cy="17" rx="1.6" ry="3" fill="#fff" fill-opacity=".85"/></svg>';
+    document.body.appendChild(drop);
+    // fall from just above the viewport, accelerating like gravity and stretching slightly
+    drop.animate([{transform:'translateY('+(-(hy+40))+'px) scaleY(1.3)',opacity:0},{opacity:1,offset:.15},{transform:'translateY(0) scaleY(1.15)',opacity:1}],
+      {duration:650,easing:'cubic-bezier(.55,0,1,.45)',fill:'forwards'}).onfinish=function(){
+      drop.animate([{transform:'scale(1.1,.9)',opacity:1},{transform:'scale(2,.15)',opacity:0}],{duration:180,easing:'ease-out',fill:'forwards'}).onfinish=function(){drop.remove()};
+      logo.animate([{transform:'translateY(0)'},{transform:'translateY(3px) scale(.995)'},{transform:'translateY(0)'}],{duration:500,easing:'cubic-bezier(.3,0,.3,1)'});
+      ripple(hx,hy);
+    };
+  }
+  function ripple(x,y){
+    var W=innerWidth,H=innerHeight,R=Math.hypot(Math.max(x,W-x),Math.max(y,H-y))+60,dur=2800;
+    var svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('class','ripple');svg.setAttribute('width',W);svg.setAttribute('height',H);
+    svg.innerHTML='<defs><radialGradient id="rippleSheet"><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".07"/></radialGradient></defs>';
+    var lens=document.createElement('div');lens.className='ripple-lens';
+    // three rings a beat apart; the first carries a faint water sheet and a refracting lens band
+    var rings=[0,260,560].map(function(delay,i){
+      var c=document.createElementNS(NS,'circle');
+      c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('stroke','#fff');
+      c.setAttribute('fill',i?'none':'url(#rippleSheet)');
+      svg.appendChild(c);
+      return {el:c,delay:delay,peak:[.55,.35,.22][i]};
+    });
+    document.body.appendChild(lens);document.body.appendChild(svg);
+    var t0=performance.now();
+    (function tick(now){
+      var t=now-t0,alive=false;
+      rings.forEach(function(g,i){
+        var p=Math.min(1,Math.max(0,(t-g.delay)/dur));
+        if(p<1)alive=true;
+        var rad=R*(1-Math.pow(1-p,1.6)),fade=Math.pow(1-p,1.4);
+        g.el.setAttribute('r',rad);
+        g.el.setAttribute('stroke-width',1+3*(1-p));
+        g.el.setAttribute('stroke-opacity',g.peak*fade);
+        if(!i){
+          g.el.setAttribute('fill-opacity',fade);
+          var b=14+26*(1-p),m='radial-gradient(circle at '+x+'px '+y+'px,transparent '+Math.max(0,rad-b)+'px,#000 '+rad+'px,transparent '+(rad+b)+'px)';
+          lens.style.webkitMaskImage=lens.style.maskImage=m;lens.style.opacity=fade;
+        }
+      });
+      if(alive)requestAnimationFrame(tick);else{svg.remove();lens.remove()}
+    })(t0);
+  }
+  // land just as the logo's fade-up settles (heroIn runs 1.6s from page load)
+  whenLoaded(logo,function(){setTimeout(start,Math.max(0,950-performance.now()))});
 })();
 
 // Wide DJ photo decodes the first time it scrolls into view
