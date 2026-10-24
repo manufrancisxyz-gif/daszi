@@ -53,6 +53,10 @@ nav.scrolled .nav-logo-full{opacity:1}
 .hero-logo{width:min(450px,78vw);animation:heroIn 1.6s cubic-bezier(.23,1,.32,1) both}
 .hero-logo-wrap{position:relative;display:inline-block;opacity:.8}
 .hero-logo-wrap .hero-logo{display:block}
+/* glitch while the tagline cycles genres: displaced logo slices and flickering scan lines */
+.glitch{position:absolute;inset:0;pointer-events:none}
+.glitch img{position:absolute;inset:0;width:100%;height:100%;visibility:hidden}
+.glitch i{position:absolute;display:block;background:var(--fg);opacity:0}
 .ascii-photo.decoding{opacity:0;animation:none}
 .ascii-photo-pre{position:absolute;inset:0;margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--fg);white-space:pre;overflow:hidden;pointer-events:none}
 /* even melt: photo focuses in beneath the ASCII, which holds full strength until halfway so brightness never dips */
@@ -759,6 +763,40 @@ function asciiReveal(img,pre,cover){
 }
 function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load',fn);img.addEventListener('error',fn)}}
 
+// Logo glitch: horizontal slices jump sideways and scan lines flicker while the tagline cycles genres,
+// then everything clears to the normal logo the moment the tagline settles on "not found".
+(function(){
+  var wrap=document.querySelector('.hero-logo-wrap'),logo=document.querySelector('.hero-logo'),sub=document.querySelector('.hero-sub');
+  if(!wrap||!logo||!sub||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var g=document.createElement('div');g.className='glitch';g.setAttribute('aria-hidden','true');
+  var slices=[0,1,2].map(function(){var im=document.createElement('img');im.src=logo.currentSrc||logo.src;im.alt='';g.appendChild(im);return im});
+  var lines=[0,1,2,3,4,5].map(function(){var l=document.createElement('i');g.appendChild(l);return l});
+  wrap.appendChild(g);
+  var done=false,last=0,rnd=Math.random;
+  sub.addEventListener('genresettled',function(){done=true},{once:true});
+  setTimeout(function(){done=true},8000); // never glitch forever if the tagline doesn't report in
+  (function tick(now){
+    if(done){g.remove();logo.style.translate='';return}
+    requestAnimationFrame(tick);
+    if(now-last<70)return; // ~14fps keeps it choppy, like a bad signal
+    last=now;
+    var on=rnd()<.6; // bursts with clean frames in between
+    slices.forEach(function(im){
+      if(!on||rnd()<.4){im.style.visibility='hidden';return}
+      var top=rnd()*90,h=3+rnd()*18;
+      im.style.visibility='visible';
+      im.style.clipPath='inset('+top+'% 0 '+Math.max(0,100-top-h)+'% 0)';
+      im.style.transform='translateX('+(rnd()-.5)*28+'px)';
+    });
+    lines.forEach(function(l){
+      if(!on||rnd()<.5){l.style.opacity=0;return}
+      var w=20+rnd()*120;
+      l.style.cssText='opacity:'+(.2+rnd()*.6)+';top:'+rnd()*100+'%;height:'+(rnd()<.7?1:2)+'px;width:'+w+'%;left:'+(-30+rnd()*(130-w))+'%';
+    });
+    logo.style.translate=on&&rnd()<.3?(rnd()-.5)*6+'px 0':''; // translate, not transform: the fade-up animation holds transform
+  })(0);
+})();
+
 // Tagline: the word after "genre :" decodes through daszi's styles via ASCII scrambles and settles on "not found".
 // The word's box eases between each word's width, so the centred line glides instead of jumping.
 (function(){
@@ -784,113 +822,11 @@ function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load
         }
         if(t<340)return requestAnimationFrame(tick);
         w.textContent=word;
-        if(last){setTimeout(function(){el.textContent=text},400);return} // settled: back to plain text once the width has eased in
+        if(last){el.dispatchEvent(new Event('genresettled'));setTimeout(function(){el.textContent=text},400);return} // settled: back to plain text once the width has eased in
         i++;setTimeout(next,320); // hold each genre briefly
       })(t0);
     })();
   });
-})();
-
-// Hero intro: the hero ripples like a water surface, spreading out from the star at the heart of the logo's S.
-// The hero's layers (photos, their CSS masks, the two gradient overlays, the logo) are redrawn onto a canvas,
-// then a WebGL shader refracts that image. Keep paintHero in step with the .hero-* CSS above.
-(function(){
-  var hero=document.querySelector('.hero'),bg=document.querySelector('.hero-bg'),logo=document.querySelector('.hero-logo');
-  if(!hero||!bg||!logo||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  var RIPPLE=3.4; // seconds
-
-  function cover(ctx,img,w,h,px,py){ // object-fit:cover with object-position px/py (0..1)
-    var k=Math.max(w/img.naturalWidth,h/img.naturalHeight),sw=w/k,sh=h/k;
-    ctx.drawImage(img,(img.naturalWidth-sw)*px,(img.naturalHeight-sh)*py,sw,sh,0,0,w,h);
-  }
-  function grad(ctx,x0,y0,x1,y1,stops){var g=ctx.createLinearGradient(x0,y0,x1,y1);stops.forEach(function(s){g.addColorStop(s[0],s[1])});return g}
-  function layer(img,w,h,px,masks){ // masks are intersected, like mask-composite:intersect
-    var c=document.createElement('canvas');c.width=w;c.height=h;var x=c.getContext('2d');
-    cover(x,img,w,h,px,.5);
-    x.globalCompositeOperation='destination-in';
-    masks.forEach(function(m){x.fillStyle=m(x,w,h);x.fillRect(0,0,w,h)});
-    return c;
-  }
-  var toRight=function(x,w,h){return grad(x,0,0,w,0,[[.3,'#000'],[.9,'rgba(0,0,0,0)']])},
-      toLeft=function(x,w,h){return grad(x,w,0,0,0,[[.3,'#000'],[.9,'rgba(0,0,0,0)']])},
-      topFade=function(x,w,h){return grad(x,0,0,0,h,[[.25,'rgba(0,0,0,0)'],[.45,'#000']])};
-  function paintHero(W,H,dpr){
-    var c=document.createElement('canvas');c.width=W*dpr;c.height=H*dpr;
-    var ctx=c.getContext('2d'),hr=hero.getBoundingClientRect();ctx.scale(dpr,dpr);
-    ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,H);
-    var L=bg.querySelector('.hero-img-left'),R=bg.querySelector('.hero-img-right'),mobile=getComputedStyle(R).display==='none';
-    [[L,.5,mobile?[topFade]:[toRight,topFade]],[R,.7,[toLeft]]].forEach(function(e){
-      var img=e[0],cs=getComputedStyle(img);if(cs.display==='none')return;
-      var r=img.getBoundingClientRect(),w=Math.round(r.width),h=Math.round(r.height);
-      ctx.globalAlpha=+cs.opacity;ctx.drawImage(layer(img,w,h,e[1],e[2]),r.left-hr.left,r.top-hr.top,w,h);
-    });
-    ctx.globalAlpha=1;
-    ctx.fillStyle=grad(ctx,0,0,W,0,[[0,'rgba(10,10,10,.3)'],[.4,'rgba(10,10,10,.7)'],[.55,'rgba(10,10,10,.5)'],[.8,'rgba(10,10,10,.8)'],[1,'#0a0a0a']]);ctx.fillRect(0,0,W,H); // .hero-bg::after
-    ctx.fillStyle=grad(ctx,0,0,0,H,[[0,'rgba(10,10,10,.5)'],[.2,'rgba(10,10,10,0)'],[.6,'rgba(10,10,10,0)'],[.8,'rgba(10,10,10,.6)'],[1,'#0a0a0a']]);ctx.fillRect(0,0,W,H); // .hero-bg::before
-    var lr=logo.getBoundingClientRect();
-    ctx.globalAlpha=+getComputedStyle(logo.parentNode).opacity;ctx.drawImage(logo,lr.left-hr.left,lr.top-hr.top,lr.width,lr.height);
-    return {canvas:c,hit:[lr.left-hr.left+lr.width*.545,lr.top-hr.top+lr.height*.489],scale:lr.width/42}; // the S's star, measured from the PNG's alpha
-  }
-
-  var FRAG=[
-    'precision highp float;',
-    'uniform sampler2D tex;uniform vec2 res,hit;uniform float t,scale;varying vec2 uv;',
-    'void main(){',
-    '  vec2 p=uv*res,d=p-hit;float r=length(d);vec2 n=r>.001?d/r:vec2(0.);',
-    '  float front=t*max(min(res.x,res.y)*.42,320.),behind=front-r;', // wave front speed scales with the viewport, never crawls on phones
-    '  float amp=scale*1.9*smoothstep(0.,.5,t)*exp(-t*.85)/(1.+r/650.);', // px of displacement, scaled to the logo; eases in, carries across the hero
-    '  float env=smoothstep(0.,240.,behind)*exp(-max(behind,0.)/320.);', // leading crests build up gradually instead of starting as a hard ring
-    '  float ph=(r-front)*.055;',
-    '  vec2 off=n*sin(ph)*amp*env;',
-    '  float light=cos(ph)*amp*env*.016;', // crest slope: brightens what is already lit, never paints the dark
-    '  vec2 o=off/res;',
-    '  vec3 col=vec3(texture2D(tex,uv-o*1.02).r,texture2D(tex,uv-o).g,texture2D(tex,uv-o*.98).b);', // faint chromatic edge
-    '  gl_FragColor=vec4(col*(1.+light)+.25*pow(max(light,0.),2.),1.);',
-    '}'].join('\n');
-
-  function run(){
-    var hr=hero.getBoundingClientRect(),W=Math.round(hr.width),H=Math.round(hr.height),dpr=Math.min(2,devicePixelRatio||1);
-    var cv=document.createElement('canvas');cv.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none';
-    cv.width=W*dpr;cv.height=H*dpr;
-    var gl=cv.getContext('webgl',{premultipliedAlpha:false,antialias:false});
-    if(!gl)return;
-    function sh(type,src){var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s}
-    var pr=gl.createProgram();
-    gl.attachShader(pr,sh(gl.VERTEX_SHADER,'attribute vec2 a;varying vec2 uv;void main(){uv=vec2(a.x*.5+.5,.5-a.y*.5);gl_Position=vec4(a,0.,1.);}'));
-    gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FRAG));
-    gl.linkProgram(pr);
-    if(!gl.getProgramParameter(pr,gl.LINK_STATUS))return;
-    gl.useProgram(pr);
-    gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());
-    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
-    var a=gl.getAttribLocation(pr,'a');gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);
-    var scene=paintHero(W,H,dpr);
-    gl.bindTexture(gl.TEXTURE_2D,gl.createTexture());
-    [gl.TEXTURE_WRAP_S,gl.TEXTURE_WRAP_T].forEach(function(k){gl.texParameteri(gl.TEXTURE_2D,k,gl.CLAMP_TO_EDGE)});
-    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,scene.canvas);
-    var U=function(n){return gl.getUniformLocation(pr,n)};
-    gl.uniform2f(U('res'),W,H);gl.uniform2f(U('hit'),scene.hit[0],scene.hit[1]);
-    gl.uniform1f(U('scale'),scene.scale);
-    var uT=U('t');
-    gl.viewport(0,0,cv.width,cv.height);
-    // swap in the canvas (identical at rest) and hide the real logo it now draws
-    gl.uniform1f(uT,0);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
-    bg.appendChild(cv);logo.style.visibility='hidden';
-    var t0=performance.now();
-    (function frame(now){
-      var t=(now-t0)/1000;
-      if(t>RIPPLE){cv.remove();logo.style.visibility='';return}
-      gl.uniform1f(uT,t);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
-      requestAnimationFrame(frame);
-    })(t0);
-  }
-  // start once every hero image is decoded and the logo's fade-up has really finished
-  // (it can start late, e.g. in a background tab, so wait on the animation rather than a timer)
-  var imgs=[logo].concat([].slice.call(bg.querySelectorAll('img')));
-  var waits=imgs.map(function(i){return i.decode?i.decode().catch(function(){}):0});
-  if(logo.getAnimations)waits=waits.concat(logo.getAnimations().map(function(a){return a.finished.catch(function(){})}));
-  Promise.all(waits).then(run);
 })();
 
 // Wide DJ photo decodes the first time it scrolls into view
