@@ -99,7 +99,7 @@ section{padding:8rem 3rem}
 .music-bg-overlay{position:absolute;inset:0;background:linear-gradient(180deg,var(--bg) 0%,rgba(10,10,10,.7) 15%,rgba(10,10,10,.6) 50%,rgba(10,10,10,.7) 85%,var(--bg) 100%)}
 .music-inner{position:relative;z-index:1}
 .tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1.5rem;max-width:1000px;margin:0 auto}
-.tile{display:block;cursor:pointer;transition:transform .4s}
+.tile{display:block;min-width:0;cursor:pointer;transition:transform .4s}
 .tile:hover{transform:translateY(-5px)}
 .tile-art{position:relative;aspect-ratio:1;overflow:hidden;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,.4)}
 .tile-art img{width:100%;height:100%;object-fit:cover;transition:all .4s}
@@ -299,6 +299,8 @@ section{padding:8rem 3rem}
   section{padding:3rem 1rem}
   .album-feature{padding:1rem}
 }
+.ascii-break{background:var(--bg);overflow:hidden;padding:4rem 0;display:flex;justify-content:center}
+#asciiArt{margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;line-height:1;letter-spacing:0;color:var(--fg);white-space:pre;user-select:none}
 </style>
 </head>
 <body>
@@ -382,6 +384,30 @@ section{padding:8rem 3rem}
       <p class="section-num" style="margin-bottom:.3rem">Singles</p>
     </div>
     <div class="tile-grid">
+    <a href="https://open.spotify.com/album/5lvHM5WjB21ztgO8nvJL9n" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_patharamaattu.jpg" alt="Patharamaattu"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Patharamaattu</h4><p>with Shafi Ali · 2026</p>
+    </a>
+    <a href="https://open.spotify.com/album/0Hol7fzxPE3vPUzle8DpC1" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_thayyaare.jpg" alt="Thayyaare"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Thayyaare</h4><p>with Sid Sriram, Sreeranjini Kodampally, MXRDERROR &amp; Muthu · 2026</p>
+    </a>
+    <a href="https://open.spotify.com/album/5tehiJCHxUq4oYmwBQqcR0" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_engane.jpg" alt="Engane Thudangum?"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Engane Thudangum?</h4><p>with STIC · 2026</p>
+    </a>
+    <a href="https://open.spotify.com/album/7vSIhHwH7gxagVlTlz6IhW" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_indianpalace.jpg" alt="The Indian Palace"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>The Indian Palace</h4><p>with नर्तकी, Shivani Sen &amp; Vishnu Vijayan · 2026</p>
+    </a>
+    <a href="https://open.spotify.com/album/6X2H5p1SYqlaQ5jpX628WD" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_aadupaambe.jpg" alt="Aadu Paambe"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Aadu Paambe</h4><p>Drum n Bass twist · 2026</p>
+    </a>
+    <a href="https://open.spotify.com/album/46KPv9RYQuGhype6XC71nr" target="_blank" class="tile reveal">
+      <div class="tile-art"><img src="art_mellechekerum.jpg" alt="Melle Chekerum"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
+      <h4>Melle Chekerum</h4><p>with Vishnu Das, JORJ. &amp; Shafi Ali · 2026</p>
+    </a>
     <a href="https://open.spotify.com/artist/0afiI57tEFIwLFQBZC71sp" target="_blank" class="tile reveal">
       <div class="tile-art"><img src="art_hridayam.jpg" alt="Hridayam"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
       <h4>Hridayam</h4><p>feat. Achayan · 2025</p>
@@ -463,6 +489,16 @@ section{padding:8rem 3rem}
   </div>
   <div class="vid-carousel reveal" id="vidCarousel">
     <div class="vid-slides" id="vidSlides">
+      <div class="vid-slide" data-yt="vvzSrykvqBA">
+        <img src="https://img.youtube.com/vi/vvzSrykvqBA/maxresdefault.jpg" alt="Thayyaare" onerror="this.src='daszi_stage.jpg'">
+        <div class="vid-slide-play"><svg viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24L27 14v20" fill="white"/></svg></div>
+        <div class="vid-slide-title">Thayyaare — Sid Sriram, Sreeranjini Kodampally, daszi, Muthu &amp; MXRDERROR</div>
+      </div>
+      <div class="vid-slide" data-yt="GkLWckGNk3U">
+        <img src="https://img.youtube.com/vi/GkLWckGNk3U/maxresdefault.jpg" alt="Engane Thudangum?" onerror="this.src='daszi_stage.jpg'">
+        <div class="vid-slide-play"><svg viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24L27 14v20" fill="white"/></svg></div>
+        <div class="vid-slide-title">Engane Thudangum? — STIC (Prod. daszi)</div>
+      </div>
       <div class="vid-slide" data-yt="TZY5K9YQfiA">
         <img src="https://img.youtube.com/vi/TZY5K9YQfiA/maxresdefault.jpg" alt="Kumbasaram" onerror="this.src='daszi_stage.jpg'">
         <div class="vid-slide-play"><svg viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24L27 14v20" fill="white"/></svg></div>
@@ -489,7 +525,7 @@ section{padding:8rem 3rem}
   </div>
   <div class="vid-track-name" id="vidTrackName"></div>
   <div class="vid-dots" id="vidDots">
-      <span class="vid-dot active"></span><span class="vid-dot"></span><span class="vid-dot"></span><span class="vid-dot"></span>
+      <span class="vid-dot active"></span><span class="vid-dot"></span><span class="vid-dot"></span><span class="vid-dot"></span><span class="vid-dot"></span><span class="vid-dot"></span>
     </div>
   </div>
   <div style="margin-top:2rem;text-align:center" class="reveal">
@@ -513,6 +549,9 @@ section{padding:8rem 3rem}
 <div class="photo-break photo-full">
   <img src="daszi_pioneer_wide.jpg" alt="daszi at the decks">
 </div>
+
+<!-- ASCII BREAK — DJ B&W photo rendered as live text -->
+<div class="ascii-break" role="img" aria-label="daszi at the decks, drawn in ASCII characters"><pre id="asciiArt" aria-hidden="true"></pre></div>
 
 <!-- ABOUT -->
 <section class="about-section" id="about">
@@ -678,6 +717,61 @@ slides.forEach(function(slide){
   });
 });
 
+
+// ASCII photo: sweeps in along the spotlight's diagonal, then shimmers. ?ascii_t=N renders one frozen frame.
+(function(){
+  var pre=document.getElementById('asciiArt');if(!pre)return;
+  var ramp=' .:-=+*#%@',img=new Image(),lum=[],cols=0,rows=0,start=null,running=false,last=0;
+  var still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var seek=new URLSearchParams(location.search).get('ascii_t');
+  function frame(t){
+    var out='',reveal=t/1800,n=ramp.length-1;
+    for(var y=0;y<rows;y++){
+      for(var x=0;x<cols;x++){
+        var edge=reveal*1.4-(x/cols+y/rows)*0.7;
+        if(edge<0){out+=' ';continue}
+        // scramble at the sweep front; hash instead of Math.random so frames are reproducible
+        if(edge<0.15){var h=Math.imul(x,374761393)+Math.imul(y,668265263)+Math.imul(t/60|0,-2048144777);h=Math.imul(h^h>>>13,1274126177);out+=ramp[((h^h>>>16)>>>0)%ramp.length];continue}
+        var l=lum[y*cols+x]*(1+Math.sin(x*0.15-y*0.1+t*0.002)*0.25); // multiplicative so black stays black
+        out+=ramp[Math.max(0,Math.min(n,Math.round(l*n)))];
+      }
+      out+='\n';
+    }
+    pre.textContent=out;
+  }
+  function build(){
+    var w=pre.parentNode.clientWidth;
+    cols=w<700?80:140;
+    rows=Math.round(cols*img.height/img.width*0.5); // char cells are ~2x taller than wide
+    pre.textContent='M';pre.style.fontSize='100px';
+    pre.style.fontSize=Math.floor(w/cols/(pre.getBoundingClientRect().width/100)*100)/100+'px'; // fit cols to width using the real glyph width
+    var cv=document.createElement('canvas');cv.width=cols;cv.height=rows;
+    var ctx=cv.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,0,0,cols,rows);
+    var d=ctx.getImageData(0,0,cols,rows).data;lum=[];
+    for(var i=0;i<d.length;i+=4)lum.push((0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2])/255);
+    // stretch levels (5th–99.5th percentile) and darken mids so the stage fog falls away and the figure reads
+    var sorted=lum.slice().sort(function(a,b){return a-b}),lo=sorted[lum.length*.05|0],hi=sorted[lum.length*.995|0];
+    lum=lum.map(function(l){return Math.pow(Math.max(0,Math.min(1,(l-lo)/(hi-lo))),1.8)});
+    frame(seek!==null?parseFloat(seek):still?1e4:0);
+  }
+  function loop(now){
+    if(!running)return;
+    requestAnimationFrame(loop);
+    if(now-last<50)return; // ~20fps for a retro feel
+    last=now;if(start===null)start=now;
+    frame(now-start);
+  }
+  img.onload=function(){
+    build();
+    window.addEventListener('resize',build);
+    if(still||seek!==null)return;
+    new IntersectionObserver(function(es){
+      running=es[0].isIntersecting;
+      if(running)requestAnimationFrame(loop);
+    },{threshold:.15}).observe(pre.parentNode);
+  };
+  img.src='daszi_dj_bw.jpg';
+})();
 </script>
 </body>
 </html>
