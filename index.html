@@ -798,7 +798,7 @@ slides.forEach(function(slide){
   if(!logo||!pre||!logo.classList.contains('decoding'))return;
   var glyphs='!#$%&*+=?@01<>/\\|ABDSZX',wipe=function(){logo.classList.remove('decoding');logo.classList.add('decoded');pre.classList.add('wiping')};
   function go(){
-    var w=logo.clientWidth,h=logo.clientHeight,cols=w<400?50:80,rows=Math.max(1,Math.round(cols*h/w*0.5));
+    var w=logo.clientWidth,h=logo.clientHeight,cols=w<400?100:160,rows=Math.max(1,Math.round(cols*h/w*0.5));
     pre.innerHTML='<span>M</span>';pre.style.fontSize='100px';
     pre.style.fontSize=w/cols/(pre.firstChild.getBoundingClientRect().width/100)+'px';pre.style.lineHeight=h/rows+'px'; // pre fills the wrap, so measure an inline glyph
     var cv=document.createElement('canvas');cv.width=cols;cv.height=rows;
