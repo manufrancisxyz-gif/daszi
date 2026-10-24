@@ -758,7 +758,7 @@ function asciiReveal(img,pre,cover){
 }
 function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load',fn);img.addEventListener('error',fn)}}
 
-// Hero intro: the hero ripples like a water surface, spreading out from the S of the logo.
+// Hero intro: the hero ripples like a water surface, spreading out from the star at the heart of the logo's S.
 // The hero's layers (photos, their CSS masks, the two gradient overlays, the logo) are redrawn onto a canvas,
 // then a WebGL shader refracts that image. Keep paintHero in step with the .hero-* CSS above.
 (function(){
@@ -796,7 +796,7 @@ function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load
     ctx.fillStyle=grad(ctx,0,0,0,H,[[0,'rgba(10,10,10,.5)'],[.2,'rgba(10,10,10,0)'],[.6,'rgba(10,10,10,0)'],[.8,'rgba(10,10,10,.6)'],[1,'#0a0a0a']]);ctx.fillRect(0,0,W,H); // .hero-bg::before
     var lr=logo.getBoundingClientRect();
     ctx.globalAlpha=+getComputedStyle(logo.parentNode).opacity;ctx.drawImage(logo,lr.left-hr.left,lr.top-hr.top,lr.width,lr.height);
-    return {canvas:c,hit:[lr.left-hr.left+lr.width*.535,lr.top-hr.top+lr.height*.16],scale:lr.width/42}; // top of the S's curve, measured from the PNG's alpha
+    return {canvas:c,hit:[lr.left-hr.left+lr.width*.545,lr.top-hr.top+lr.height*.489],scale:lr.width/42}; // the S's star, measured from the PNG's alpha
   }
 
   var FRAG=[
@@ -805,14 +805,13 @@ function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load
     'void main(){',
     '  vec2 p=uv*res,d=p-hit;float r=length(d);vec2 n=r>.001?d/r:vec2(0.);',
     '  float front=t*max(min(res.x,res.y)*.42,320.),behind=front-r;', // wave front speed scales with the viewport, never crawls on phones
-    '  float amp=scale*1.9*exp(-t*.85)/(1.+r/650.);', // px of displacement, scaled to the logo; carries across the whole hero
-    '  float env=smoothstep(0.,80.,behind)*exp(-max(behind,0.)/300.);',
+    '  float amp=scale*1.9*smoothstep(0.,.5,t)*exp(-t*.85)/(1.+r/650.);', // px of displacement, scaled to the logo; eases in, carries across the hero
+    '  float env=smoothstep(0.,240.,behind)*exp(-max(behind,0.)/320.);', // leading crests build up gradually instead of starting as a hard ring
     '  float ph=(r-front)*.055;',
     '  vec2 off=n*sin(ph)*amp*env;',
-    '  float light=cos(ph)*amp*env*.022;', // crest slope: brightens what is already lit, never paints the dark
-    '  float s=exp(-r/40.)*sin(min(t*9.,3.1416));off+=n*s*scale*1.5;light+=s*.2;', // brief swell at the centre, rising from zero so the swap-in never pops
+    '  float light=cos(ph)*amp*env*.016;', // crest slope: brightens what is already lit, never paints the dark
     '  vec2 o=off/res;',
-    '  vec3 col=vec3(texture2D(tex,uv-o*1.04).r,texture2D(tex,uv-o).g,texture2D(tex,uv-o*.96).b);', // faint chromatic edge
+    '  vec3 col=vec3(texture2D(tex,uv-o*1.02).r,texture2D(tex,uv-o).g,texture2D(tex,uv-o*.98).b);', // faint chromatic edge
     '  gl_FragColor=vec4(col*(1.+light)+.25*pow(max(light,0.),2.),1.);',
     '}'].join('\n');
 
@@ -853,11 +852,12 @@ function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load
       requestAnimationFrame(frame);
     })(t0);
   }
-  // start once the logo's fade-up (heroIn, 1.6s from load) has settled and every hero image is decoded
+  // start once every hero image is decoded and the logo's fade-up has really finished
+  // (it can start late, e.g. in a background tab, so wait on the animation rather than a timer)
   var imgs=[logo].concat([].slice.call(bg.querySelectorAll('img')));
-  Promise.all(imgs.map(function(i){return i.decode?i.decode().catch(function(){}):0})).then(function(){
-    setTimeout(run,Math.max(0,1650-performance.now()));
-  });
+  var waits=imgs.map(function(i){return i.decode?i.decode().catch(function(){}):0});
+  if(logo.getAnimations)waits=waits.concat(logo.getAnimations().map(function(a){return a.finished.catch(function(){})}));
+  Promise.all(waits).then(run);
 })();
 
 // Wide DJ photo decodes the first time it scrolls into view
