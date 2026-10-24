@@ -54,9 +54,13 @@ nav.scrolled .nav-logo-full{opacity:1}
 .hero-logo-wrap{position:relative;display:inline-block}
 .hero-logo-wrap .hero-logo{display:block}
 .hero-logo.decoding{opacity:0;animation:none}
-.hero-logo.decoded{animation:logoIn 1.1s cubic-bezier(.23,1,.32,1) both}
-.hero-logo-ascii{position:absolute;inset:0;margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--fg);white-space:pre;overflow:hidden;pointer-events:none;transition:opacity .7s}
-@keyframes logoIn{from{opacity:0;filter:blur(10px) brightness(2.5)}to{opacity:1;filter:blur(0) brightness(1)}}
+.hero-logo-ascii{position:absolute;inset:0;margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--fg);white-space:pre;overflow:hidden;pointer-events:none}
+/* soft-edged left-to-right wipe: logo in behind the edge, ASCII out ahead of it, over the same mask */
+.hero-logo.decoded,.hero-logo-ascii.wiping{-webkit-mask-size:300% 100%;mask-size:300% 100%;animation:logoWipe 1.3s cubic-bezier(.45,0,.25,1) both}
+.hero-logo.decoded{-webkit-mask-image:linear-gradient(90deg,#000 40%,transparent 60%);mask-image:linear-gradient(90deg,#000 40%,transparent 60%);animation-name:logoWipe,logoFocus}
+.hero-logo-ascii.wiping{-webkit-mask-image:linear-gradient(90deg,transparent 40%,#000 60%);mask-image:linear-gradient(90deg,transparent 40%,#000 60%)}
+@keyframes logoWipe{from{-webkit-mask-position:100% 0;mask-position:100% 0}to{-webkit-mask-position:0 0;mask-position:0 0}}
+@keyframes logoFocus{from{filter:blur(6px);opacity:.4}to{filter:blur(0);opacity:1}}
 .hero-sub{margin-top:2rem;font-family:'Cormorant Garamond',serif;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:.5em;color:var(--muted-light);text-transform:lowercase;font-weight:300;animation:heroIn 1.6s .3s cubic-bezier(.23,1,.32,1) both}
 .hero-cta{margin-top:2.5rem;display:flex;gap:1rem;justify-content:center;animation:heroIn 1.6s .5s cubic-bezier(.23,1,.32,1) both}
 .hero-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--muted),transparent);position:absolute;bottom:2.5rem;left:50%;z-index:1;animation:heroIn 1.6s .7s cubic-bezier(.23,1,.32,1) both}
@@ -788,11 +792,11 @@ slides.forEach(function(slide){
   img.src='daszi_dj_bw.jpg';
 })();
 
-// Hero logo: scrambled characters in the logo's shape lock in left to right, then the real logo flashes in
+// Hero logo: scrambled characters in the logo's shape lock in left to right while a soft wipe hands over to the real logo
 (function(){
   var logo=document.querySelector('.hero-logo'),pre=document.querySelector('.hero-logo-ascii');
   if(!logo||!pre||!logo.classList.contains('decoding'))return;
-  var glyphs='!#$%&*+=?@01<>/\\|ABDSZX',done=function(){logo.classList.remove('decoding');logo.classList.add('decoded');pre.style.opacity=0};
+  var glyphs='!#$%&*+=?@01<>/\\|ABDSZX',wipe=function(){logo.classList.remove('decoding');logo.classList.add('decoded');pre.classList.add('wiping')};
   function go(){
     var w=logo.clientWidth,h=logo.clientHeight,cols=w<400?50:80,rows=Math.max(1,Math.round(cols*h/w*0.5));
     pre.innerHTML='<span>M</span>';pre.style.fontSize='100px';
@@ -804,7 +808,8 @@ slides.forEach(function(slide){
     var t0=performance.now(),last=0;
     (function tick(now){
       var t=now-t0;
-      if(t>1500)return done();
+      if(t>350&&!logo.classList.contains('decoded'))wipe(); // wipe trails the lock-in front
+      if(t>1800){pre.textContent='';return}
       requestAnimationFrame(tick);
       if(now-last<45)return;last=now;
       var out='';
@@ -812,7 +817,7 @@ slides.forEach(function(slide){
       pre.textContent=out;
     })(t0);
   }
-  if(logo.complete&&logo.naturalWidth)go();else{logo.onload=go;logo.onerror=done}
+  if(logo.complete&&logo.naturalWidth)go();else{logo.onload=go;logo.onerror=wipe}
 })();
 </script>
 </body>
