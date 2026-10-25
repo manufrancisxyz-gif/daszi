@@ -771,33 +771,32 @@ function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load
   var g=document.createElement('div');g.className='glitch';g.setAttribute('aria-hidden','true');
   var tints=['var(--fg)','#0a0a0a'],colours=tints;
   var split=tints.map(function(c){var b=document.createElement('b');b.style.background=c;g.appendChild(b);return b}); // logo-shaped colour copies via mask
-  var lines=[0,1].map(function(){var l=document.createElement('i');g.appendChild(l);return l});
+  var lines=[0].map(function(){var l=document.createElement('i');g.appendChild(l);return l});
   wrap.appendChild(g);
   var done=false,last=0,rnd=Math.random;
   sub.addEventListener('genresettled',function(){done=true},{once:true});
   setTimeout(function(){done=true},8000); // never glitch forever if the tagline doesn't report in
   (function tick(now){
-    if(done){g.remove();logo.style.translate='';return}
+    if(done){g.remove();return}
     requestAnimationFrame(tick);
     if(now-last<70)return; // ~14fps keeps it choppy, like a bad signal
     last=now;
-    var on=rnd()<.2; // rare bursts, mostly clean frames
+    var on=rnd()<.12; // rare flickers, almost always clean
     // a white copy and a background-black copy of one thin band pull apart, so the band slips and leaves a gap;
     // sometimes just a hairline offset of the whole logo instead
-    var whole=rnd()<.25,top=whole?0:rnd()*94,h=whole?100:1+rnd()*3,dx=whole?.6+rnd()*.6:1+rnd()*1.5;
+    var whole=rnd()<.25,top=whole?0:rnd()*96,h=whole?100:.8+rnd()*1.5,dx=whole?.4+rnd()*.3:.6+rnd()*.8;
     split.forEach(function(b,k){
       if(!on){b.style.visibility='hidden';return}
       b.style.visibility='visible';
-      b.style.opacity=whole?.18:.55;
+      b.style.opacity=whole?.1:.35;
       b.style.clipPath='inset('+top+'% 0 '+Math.max(0,100-top-h)+'% 0)';
       b.style.transform='translateX('+(k?dx:-dx)+'px)';
     });
     lines.forEach(function(l){
       if(!on||rnd()<.5){l.style.opacity=0;return}
-      var w=2+rnd()*7; // tiny faint hairlines kept within the logo, white or cutting black
-      l.style.cssText='opacity:'+(.06+rnd()*.12)+';top:'+rnd()*100+'%;height:1px;width:'+w+'%;left:'+rnd()*(100-w)+'%;background:'+colours[rnd()*2|0];
+      var w=2+rnd()*4; // one tiny faint hairline kept within the logo, white or cutting black
+      l.style.cssText='opacity:'+(.04+rnd()*.07)+';top:'+rnd()*100+'%;height:1px;width:'+w+'%;left:'+rnd()*(100-w)+'%;background:'+colours[rnd()*2|0];
     });
-    logo.style.translate=on&&rnd()<.08?(rnd()-.5)*1.5+'px 0':''; // translate, not transform: the fade-up animation holds transform
   })(0);
 })();
 
