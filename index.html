@@ -57,13 +57,6 @@ nav.scrolled .nav-logo-full{opacity:1}
 .glitch{position:absolute;inset:0;pointer-events:none}
 .glitch b{position:absolute;inset:0;visibility:hidden;-webkit-mask:url(daszi_hero_logo.png) 0 0/100% 100% no-repeat;mask:url(daszi_hero_logo.png) 0 0/100% 100% no-repeat}
 .glitch i{position:absolute;display:block;background:var(--fg);opacity:0}
-.ascii-photo.decoding{opacity:0;animation:none}
-.ascii-photo-pre{position:absolute;inset:0;margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--fg);white-space:pre;overflow:hidden;pointer-events:none}
-/* even melt: photo focuses in beneath the ASCII, which holds full strength until halfway so brightness never dips */
-.ascii-photo.decoded{animation:logoFocus 1.2s cubic-bezier(.45,0,.55,1) both}
-.ascii-photo-pre.melting{animation:asciiMelt 1.2s cubic-bezier(.45,0,.55,1) both}
-@keyframes logoFocus{from{opacity:0;filter:blur(5px)}to{opacity:1;filter:blur(0)}}
-@keyframes asciiMelt{0%,45%{opacity:1;filter:blur(0)}to{opacity:0;filter:blur(4px)}}
 .genre-word{display:inline-block;vertical-align:top;white-space:nowrap;overflow:hidden;text-align:left;transition:width .35s cubic-bezier(.4,0,.2,1)}
 .hero-sub{margin-top:2rem;font-family:'Cormorant Garamond',serif;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:.5em;color:var(--muted-light);text-transform:lowercase;font-weight:300;animation:heroIn 1.6s .3s cubic-bezier(.23,1,.32,1) both}
 .hero-cta .btn-white{opacity:.8}
@@ -562,8 +555,7 @@ section{padding:8rem 3rem}
 
 <!-- PHOTO BREAK — Pioneer DJ wide shot full width -->
 <div class="photo-break photo-full">
-  <img class="ascii-photo" src="daszi_pioneer_wide.jpg" alt="daszi at the decks">
-  <pre class="ascii-photo-pre" aria-hidden="true"></pre>
+  <img src="daszi_pioneer_wide.jpg" alt="daszi at the decks">
 </div>
 
 <!-- ABOUT -->
@@ -731,38 +723,6 @@ slides.forEach(function(slide){
 });
 
 
-// Decode an image from scrambled ASCII, then melt evenly into the real image beneath it.
-// Logos use their alpha as the shape; photos (cover=true) map brightness to characters, cropped like object-fit:cover.
-function asciiReveal(img,pre,cover){
-  var glyphs='!#$%&*+=?@01<>/\\|ABDSZX',ramp=' .:-=+*#%@',melt=function(){img.classList.remove('decoding');img.classList.add('decoded');pre.classList.add('melting')};
-  if(!img.naturalWidth)return melt();
-  var w=img.clientWidth,h=img.clientHeight,cols=w<400?100:160,rows=Math.max(1,Math.round(cols*h/w*0.5));
-  pre.innerHTML='<span>M</span>';pre.style.fontSize='100px';
-  pre.style.fontSize=w/cols/(pre.firstChild.getBoundingClientRect().width/100)+'px';pre.style.lineHeight=h/rows+'px'; // pre fills its box, so measure an inline glyph
-  var cv=document.createElement('canvas');cv.width=cols;cv.height=rows;
-  var ctx=cv.getContext('2d',{willReadFrequently:true}),iw=img.naturalWidth,ih=img.naturalHeight;
-  if(cover){var k=Math.max(w/iw,h/ih),sw=w/k,sh=h/k;ctx.drawImage(img,(iw-sw)/2,(ih-sh)/2,sw,sh,0,0,cols,rows)}
-  else ctx.drawImage(img,0,0,cols,rows);
-  var d=ctx.getImageData(0,0,cols,rows).data,fin=[],settle=[],i,l;
-  for(i=0;i<cols*rows;i++){
-    l=(0.2126*d[i*4]+0.7152*d[i*4+1]+0.0722*d[i*4+2])/255;
-    fin.push(cover?ramp[Math.min(9,Math.round(Math.pow(l,1.3)*12))]:d[i*4+3]>90?'#':' ');
-    settle.push(200+Math.random()*600);
-  }
-  var t0=performance.now(),last=0;
-  (function tick(now){
-    var t=now-t0;
-    if(t>700&&img.classList.contains('decoding'))melt(); // most cells have locked by now; stragglers dissolve in the melt
-    if(t>2000){pre.textContent='';return}
-    requestAnimationFrame(tick);
-    if(now-last<45)return;last=now;
-    var out='';
-    for(var y=0;y<rows;y++){for(var x=0;x<cols;x++){var j=y*cols+x;out+=fin[j]===' '?' ':t>settle[j]?fin[j]:glyphs[Math.random()*glyphs.length|0]}out+='\n'}
-    pre.textContent=out;
-  })(performance.now());
-}
-function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load',fn);img.addEventListener('error',fn)}}
-
 // Logo glitch: a thin band of the logo slips in black and white and faint hairlines flicker while the tagline cycles genres,
 // then everything clears to the normal logo the moment the tagline settles on "not found".
 (function(){
@@ -830,19 +790,6 @@ function whenLoaded(img,fn){if(img.complete)fn();else{img.addEventListener('load
       })(t0);
     })();
   });
-})();
-
-// Wide DJ photo decodes the first time it scrolls into view
-(function(){
-  var img=document.querySelector('.ascii-photo'),pre=document.querySelector('.ascii-photo-pre');
-  if(!img||!pre||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  img.classList.add('decoding');
-  var io=new IntersectionObserver(function(es){
-    if(!es[0].isIntersecting)return;
-    io.disconnect();
-    whenLoaded(img,function(){asciiReveal(img,pre,true)});
-  },{threshold:.35});
-  io.observe(img.parentNode);
 })();
 </script>
 </body>
