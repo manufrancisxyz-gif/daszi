@@ -301,6 +301,13 @@ section{padding:8rem 3rem}
   section{padding:3rem 1rem}
   .album-feature{padding:1rem}
 }
+/* easter egg: Konami code (up up down down left right left right B A) toggles "after hours" red stage lighting */
+html.after-hours{--bg:#0e0707;--accent:#ff4a3d}
+html.after-hours body{background:var(--bg)}
+html.after-hours img:not(.hero-logo){filter:grayscale(1) sepia(1) hue-rotate(-45deg) saturate(4.5) brightness(.85)}
+html.after-hours .hero-logo{filter:drop-shadow(0 0 14px rgba(255,74,61,.55))}
+.ah-toast{position:fixed;left:50%;bottom:2rem;transform:translate(-50%,1rem);opacity:0;z-index:2000;pointer-events:none;font:400 .75rem/1.4 'IBM Plex Mono',monospace;letter-spacing:.15em;color:var(--fg);background:rgba(10,10,10,.85);border:1px solid #3a1512;padding:.7rem 1.2rem;transition:opacity .5s,transform .5s;white-space:nowrap}
+.ah-toast.show{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
@@ -752,6 +759,20 @@ slides.forEach(function(slide){
         i++;setTimeout(next,320); // hold each genre briefly
       })(t0);
     })();
+  });
+})();
+// Easter egg: the Konami code toggles "after hours" mode
+(function(){
+  var code=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'],pos=0,toast,hide;
+  document.addEventListener('keydown',function(e){
+    var k=e.key.length===1?e.key.toLowerCase():e.key;
+    pos=k===code[pos]?pos+1:(k===code[0]?1:0);
+    if(pos<code.length)return;
+    pos=0;
+    var on=document.documentElement.classList.toggle('after-hours');
+    if(!toast){toast=document.createElement('div');toast.className='ah-toast';toast.setAttribute('role','status');document.body.appendChild(toast)}
+    toast.textContent=on?'after hours mode':'lights back on';
+    toast.classList.add('show');clearTimeout(hide);hide=setTimeout(function(){toast.classList.remove('show')},2600);
   });
 })();
 </script>
