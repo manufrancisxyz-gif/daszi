@@ -73,8 +73,9 @@ nav.scrolled .nav-logo-full{opacity:1}
 .photo-break{position:relative;overflow:hidden}
 .photo-break img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 8s ease-out}
 .photo-break:hover img{transform:scale(1.03)}
-.photo-full{height:55vh;min-height:350px}
-.photo-full::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,var(--bg) 0%,transparent 12%,transparent 88%,var(--bg) 100%);pointer-events:none}
+.photo-full{height:clamp(200px,36vw,460px)} /* cinematic wide strip */
+.photo-full img{-webkit-mask-image:linear-gradient(to bottom,transparent,#000 28%,#000 72%,transparent),linear-gradient(to right,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 28%,#000 72%,transparent),linear-gradient(to right,transparent,#000 12%,#000 88%,transparent);-webkit-mask-composite:source-in;mask-composite:intersect} /* fade into the page on every edge */
+.photo-break+section{border-top:none} /* a divider would cut through the fade */
 /* Two-up photo row */
 
 .spotify-bar{padding:0 3rem;position:relative;z-index:2;margin-top:-1rem}
@@ -265,7 +266,6 @@ section{padding:8rem 3rem}
   .album-feature{grid-template-columns:1fr;gap:1.5rem;padding:1.2rem}
   .album-feature-info h3{font-size:1.5rem}
   .album-desc{font-size:.95rem}
-  .photo-full{height:30vh;min-height:220px}
   .video-blend{height:50vh;min-height:280px}
   .videos-section{padding:4rem 1.2rem}
   .videos-section{padding:4rem 0}
@@ -531,7 +531,7 @@ section{padding:8rem 3rem}
 
 <!-- PHOTO BREAK — Pioneer DJ wide shot full width -->
 <div class="photo-break photo-full">
-  <img src="daszi_pioneer_wide.jpg" alt="daszi at the decks">
+  <img src="daszi_pioneer_wide.jpg" alt="daszi at the decks" style="object-position:center 58%">
 </div>
 
 <!-- ABOUT -->
@@ -553,7 +553,7 @@ section{padding:8rem 3rem}
 
 <!-- PHOTO BREAK — Silhouette from behind full width -->
 <div class="photo-break photo-full">
-  <img src="daszi_silhouette.jpg" alt="daszi on stage">
+  <img src="daszi_silhouette.jpg" alt="daszi on stage" style="object-position:center 48%">
 </div>
 
 <!-- CONTACT -->
