@@ -732,21 +732,25 @@ slides.forEach(function(slide){
 
 // Tagline: the word after "genre :" decodes through daszi's styles via ASCII scrambles and settles on "not found".
 // The word's box eases between each word's width, so the centred line glides instead of jumping.
+// Easter egg: clicking it reshuffles; every 10th click lands somewhere absurd.
 (function(){
   var el=document.querySelector('.hero-sub');
-  if(!el||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  var text=el.textContent,prefix='genre : ',glyphs='abcdefghijklmnopqrstuvwxyz#%&*+=<>/\\|?!';
-  var words=['folktronic','ambient','hip hop','psychedelic','drum n bass','experimental','not found'];
-  el.setAttribute('aria-label',text);
-  (document.fonts?document.fonts.ready:Promise.resolve()).then(function(){
-    el.innerHTML='';
-    el.appendChild(document.createTextNode(prefix));
-    var w=document.createElement('span');w.className='genre-word';w.setAttribute('aria-hidden','true');el.appendChild(w);
-    var widths=words.map(function(x){w.textContent=x;return w.getBoundingClientRect().width});
+  if(!el)return;
+  var still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var prefix='genre : ',glyphs='abcdefghijklmnopqrstuvwxyz#%&*+=<>/\\|?!';
+  var intro=['folktronic','ambient','hip hop','psychedelic','drum n bass','experimental'];
+  var pool=intro.concat(['lo-fi','techno','folk','trip hop']);
+  var odd=['chenda dubstep','still loading…','ask the forest','undefined','yes'];
+  var w,m,busy=false,clicks=0;
+  el.setAttribute('aria-label',el.textContent);
+  function width(x){m.textContent=x;return m.getBoundingClientRect().width}
+  function play(words,done){
+    busy=true;
     var i=0;
+    w.style.width=w.getBoundingClientRect().width+'px'; // pin the current width so the first change can ease
     (function next(){
       var word=words[i],last=i===words.length-1,settle=word.split('').map(function(){return 60+Math.random()*260}),t0=performance.now(),prev=0;
-      w.style.width=widths[i]+'px';
+      w.style.width=width(word)+'px';
       (function tick(now){
         var t=now-t0;
         if(now-prev>=50){
@@ -755,10 +759,31 @@ slides.forEach(function(slide){
         }
         if(t<340)return requestAnimationFrame(tick);
         w.textContent=word;
-        if(last){el.dispatchEvent(new Event('genresettled'));setTimeout(function(){el.textContent=text},400);return} // settled: back to plain text once the width has eased in
+        if(last){
+          el.setAttribute('aria-label',prefix+word);
+          setTimeout(function(){w.style.width='';busy=false},400); // back to natural width once the ease finishes
+          if(done)done();
+          return;
+        }
         i++;setTimeout(next,320); // hold each genre briefly
       })(t0);
     })();
+  }
+  function pick(n,avoid){var out=[];while(out.length<n){var g=pool[Math.random()*pool.length|0];if(g!==avoid&&out.indexOf(g)<0)out.push(g)}return out}
+  (document.fonts?document.fonts.ready:Promise.resolve()).then(function(){
+    el.innerHTML='';
+    el.appendChild(document.createTextNode(prefix));
+    w=document.createElement('span');w.className='genre-word';w.setAttribute('aria-hidden','true');w.textContent='not found';
+    m=document.createElement('span');m.className='genre-word';m.setAttribute('aria-hidden','true');m.style.cssText='position:absolute;visibility:hidden'; // measures words off-screen
+    el.appendChild(w);el.appendChild(m);
+    if(!still)play(intro.concat('not found'),function(){el.dispatchEvent(new Event('genresettled'))});
+    el.addEventListener('click',function(){
+      if(busy)return;
+      clicks++;
+      var final=clicks%10===0?odd[Math.random()*odd.length|0]:'not found';
+      if(still){w.textContent=final;el.setAttribute('aria-label',prefix+final);return}
+      play(pick(3,w.textContent).concat(final));
+    });
   });
 })();
 // Easter egg: the Konami code toggles "after hours" mode
