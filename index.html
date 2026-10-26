@@ -8,12 +8,12 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>daszi — Official</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0a0a0a;--fg:#e8e4de;--white:#fff;--muted:#5a5a5a;--muted-light:#8a8a8a;--card:#0f0f0f;--border:#1a1a1a;--border-light:#2a2a2a;--accent:#c8a44e}
 html{scroll-behavior:smooth;font-size:17px}
-body{background:var(--bg);color:var(--fg);font-family:'Instrument Sans',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--fg);font-family:'Familjen Grotesk',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 ::selection{background:var(--white);color:#000}
 a{color:inherit;text-decoration:none}
 body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
@@ -58,7 +58,7 @@ nav.scrolled .nav-logo-full{opacity:1}
 .glitch b{position:absolute;inset:0;visibility:hidden;-webkit-mask:url(daszi_hero_logo.png) 0 0/100% 100% no-repeat;mask:url(daszi_hero_logo.png) 0 0/100% 100% no-repeat}
 .glitch i{position:absolute;display:block;background:var(--fg);opacity:0}
 .genre-word{display:inline-block;vertical-align:top;white-space:nowrap;overflow:hidden;text-align:left;transition:width .35s cubic-bezier(.4,0,.2,1)}
-.hero-sub{margin-top:2rem;font-family:'Cormorant Garamond',serif;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:.5em;color:var(--muted-light);text-transform:lowercase;font-weight:300;animation:heroIn 1.6s .3s cubic-bezier(.23,1,.32,1) both}
+.hero-sub{margin-top:2rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:.35em;color:var(--muted-light);text-transform:lowercase;font-weight:400;animation:heroIn 1.6s .3s cubic-bezier(.23,1,.32,1) both}
 .hero-cta .btn-white{opacity:.8}
 .hero-cta{margin-top:2.5rem;display:flex;gap:1rem;justify-content:center;animation:heroIn 1.6s .5s cubic-bezier(.23,1,.32,1) both}
 .hero-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--muted),transparent);position:absolute;bottom:2.5rem;left:50%;z-index:1;animation:heroIn 1.6s .7s cubic-bezier(.23,1,.32,1) both}
@@ -86,9 +86,9 @@ nav.scrolled .nav-logo-full{opacity:1}
 .spotify-bar{padding:0 3rem;position:relative;z-index:2;margin-top:-1rem}
 
 section{padding:8rem 3rem}
-.section-num{font-family:'Cormorant Garamond',serif;font-size:.85rem;color:var(--muted);letter-spacing:.4em;margin-bottom:.5rem}
-.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:300;line-height:1.1;margin-bottom:3rem}
-.section-title em{font-style:italic}
+.section-num{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--muted);letter-spacing:.3em;margin-bottom:.5rem;font-weight:400}
+.section-title{font-family:'Familjen Grotesk',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:600;line-height:1.05;margin-bottom:3rem;letter-spacing:-.03em}
+.section-title em{font-style:normal;color:var(--accent)}
 
 /* FEATURED ALBUM */
 .albums-row{max-width:800px;margin:0 auto}
@@ -96,9 +96,9 @@ section{padding:8rem 3rem}
 .album-feature:hover{border-color:var(--border-light);background:rgba(255,255,255,.04);transform:translateY(-3px)}
 .album-feature-art{position:relative;aspect-ratio:1;overflow:hidden;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
 .album-feature-art img{width:100%;height:100%;object-fit:cover}
-.album-feature-info h3{font-family:'Cormorant Garamond',serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:300;margin-bottom:.5rem}
+.album-feature-info h3{font-family:'Familjen Grotesk',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:600;margin-bottom:.5rem;letter-spacing:-.02em}
 .album-feature-info>p{font-size:.85rem;color:var(--muted);letter-spacing:.1em}
-.album-desc{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted-light);line-height:1.7;margin-top:1rem;font-weight:300}
+.album-desc{font-family:'Familjen Grotesk',sans-serif;font-size:1rem;color:var(--muted-light);line-height:1.7;margin-top:1rem;font-weight:400}
 
 /* TILE GRID DISCOGRAPHY */
 .music-section{position:relative;overflow:hidden}
@@ -122,18 +122,18 @@ section{padding:8rem 3rem}
 .tracks{max-width:800px}
 .track{display:grid;grid-template-columns:32px 1fr auto auto;align-items:center;gap:1.5rem;padding:1.4rem 0;border-bottom:1px solid var(--border);transition:all .3s;cursor:pointer}
 .track:hover{padding-left:.8rem}
-.track-num{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted)}
+.track-num{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--muted);font-weight:400}
 .track:hover .track-num{color:var(--white)}
 .track-title{font-size:.95rem;font-weight:500}
 .track-title span{display:block;font-size:.75rem;color:var(--muted);margin-top:.2rem;font-weight:400}
-.track-year{font-family:'Cormorant Garamond',serif;font-size:.85rem;color:var(--muted)}
+.track-year{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--muted);font-weight:400}
 .track-link{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-light);border:1px solid var(--border-light);padding:.4rem 1rem;transition:all .3s}
 .track:hover .track-link{border-color:var(--white);color:var(--white)}
 .albums-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;margin-top:3rem;max-width:800px}
 .album-card{cursor:pointer;transition:transform .4s}
 .album-card:hover{transform:translateY(-4px)}
 .album-art{aspect-ratio:1;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
-.album-art-text{font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:#1a1a1a;font-weight:300;font-style:italic}
+.album-art-text{font-family:'Familjen Grotesk',sans-serif;font-size:2.5rem;color:#1a1a1a;font-weight:600;font-style:normal;letter-spacing:-.03em}
 .album-card h4{font-size:.85rem;font-weight:500;margin-bottom:.2rem}
 .album-card p{font-size:.7rem;color:var(--muted)}
 .listen-cta{display:flex;gap:1rem;margin-top:2.5rem;align-items:center;flex-wrap:wrap}
@@ -146,10 +146,10 @@ section{padding:8rem 3rem}
 .merch-img{aspect-ratio:1;background:#111;display:flex;align-items:center;justify-content:center;position:relative}
 .merch-img::after{content:'COMING SOON';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,10,10,.85);font-size:.7rem;letter-spacing:.3em;color:var(--muted-light);opacity:0;transition:opacity .4s}
 .merch-card:hover .merch-img::after{opacity:1}
-.merch-placeholder{font-family:'Cormorant Garamond',serif;font-size:3rem;color:#1a1a1a;font-style:italic}
+.merch-placeholder{font-family:'Familjen Grotesk',sans-serif;font-size:3rem;color:#1a1a1a;font-style:normal;font-weight:600;letter-spacing:-.03em}
 .merch-info{padding:1.2rem 1.5rem;border-top:1px solid var(--border)}
 .merch-info h3{font-size:.85rem;font-weight:500;margin-bottom:.3rem}
-.merch-info .price{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted-light)}
+.merch-info .price{font-family:'IBM Plex Mono',monospace;font-size:.9rem;color:var(--muted-light);font-weight:400}
 
 .about-section{border-top:1px solid var(--border)}
 .about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:5rem;max-width:1000px;align-items:start}
@@ -158,10 +158,10 @@ section{padding:8rem 3rem}
 .about-img{width:100%;aspect-ratio:3/4;position:relative;z-index:1;overflow:hidden;border:1px solid var(--border)}
 .about-img img{width:100%;height:100%;object-fit:cover;object-position:center 20%;transition:transform .6s}
 .about-img:hover img{transform:scale(1.03)}
-.about-text p{font-family:'Cormorant Garamond',serif;font-size:1.3rem;line-height:1.9;color:var(--muted-light);font-weight:300;margin-bottom:1.5rem}
+.about-text p{font-family:'Familjen Grotesk',sans-serif;font-size:1.1rem;line-height:1.75;color:var(--muted-light);font-weight:400;margin-bottom:1.5rem}
 .about-text p:first-of-type::first-letter{font-size:3.5rem;float:left;line-height:.85;margin-right:.6rem;margin-top:.15rem;color:var(--white)}
 .about-stats{display:flex;gap:3rem;margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--border)}
-.stat-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--white)}
+.stat-num{font-family:'Familjen Grotesk',sans-serif;font-size:2rem;font-weight:600;color:var(--white);letter-spacing:-.03em}
 .stat-label{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:.2rem}
 .social-row{display:flex;gap:.8rem;margin-top:2.5rem}
 .social-btn{width:40px;height:40px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .3s;font-size:.6rem;font-weight:600;color:var(--muted)}
@@ -172,19 +172,19 @@ section{padding:8rem 3rem}
 .contact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;max-width:900px;margin:0 auto}
 .contact-card{text-align:center;padding:2rem 1rem;border:1px solid var(--border);border-radius:4px;transition:all .4s}
 .contact-card:hover{border-color:var(--border-light);background:rgba(255,255,255,.02)}
-.contact-card h4{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:400;margin-bottom:.6rem;color:var(--fg)}
+.contact-card h4{font-family:'Familjen Grotesk',sans-serif;font-size:1.15rem;font-weight:600;margin-bottom:.6rem;color:var(--fg);letter-spacing:-.01em}
 .contact-card a{font-size:.85rem;color:var(--muted-light);letter-spacing:.05em;transition:color .3s}
 .contact-card:hover a{color:var(--white)}
 
 .footer-section{border-top:1px solid var(--border);padding:4rem 3rem}
 .footer-inner{display:flex;align-items:center;justify-content:space-between}
-.footer-brand{font-family:'Cormorant Garamond',serif;font-size:.9rem;font-weight:300;letter-spacing:.3em;color:var(--muted);text-transform:lowercase}
+.footer-brand{font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:400;letter-spacing:.3em;color:var(--muted);text-transform:lowercase}
 .footer-copy{font-size:.75rem;color:var(--muted);letter-spacing:.15em}
 .footer-icons{display:flex;gap:1.2rem}
 .footer-icons a{color:var(--muted);transition:color .3s}
 .footer-icons a:hover{color:var(--white)}
 
-.btn{padding:.9rem 2.2rem;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;border:none;cursor:pointer;transition:all .4s;font-family:'Instrument Sans',sans-serif;font-weight:500;display:inline-block}
+.btn{padding:.9rem 2.2rem;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;border:none;cursor:pointer;transition:all .4s;font-family:'Familjen Grotesk',sans-serif;font-weight:500;display:inline-block}
 .btn-white{background:var(--white);color:#000}
 .btn-white:hover{background:transparent;color:var(--white);box-shadow:inset 0 0 0 1px var(--white)}
 .btn-outline{background:transparent;color:var(--fg);border:1px solid var(--border-light)}
@@ -206,9 +206,9 @@ section{padding:8rem 3rem}
 .vid-slide.playing img,.vid-slide.playing .vid-slide-play,.vid-slide.playing .vid-slide-title{position:absolute;visibility:hidden;pointer-events:none}
 .vid-slide-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;transition:transform .3s}
 .vid-slide:hover .vid-slide-play{transform:scale(1.1)}
-.vid-slide-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted-light);font-weight:300;letter-spacing:.1em;text-align:center;padding:.8rem 0 0;opacity:0;transition:opacity .7s}
+.vid-slide-title{font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--muted-light);font-weight:400;letter-spacing:.1em;text-align:center;padding:.8rem 0 0;opacity:0;transition:opacity .7s}
 .vid-slide-title{position:absolute;visibility:hidden;pointer-events:none}
-.vid-track-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--fg);font-weight:300;letter-spacing:.1em;text-align:center;padding:.8rem 0 .3rem;transition:opacity .4s}
+.vid-track-name{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--fg);font-weight:400;letter-spacing:.1em;text-align:center;padding:.8rem 0 .3rem;transition:opacity .4s}
 .vid-track-name.fade{opacity:0}
 .vid-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;background:rgba(10,10,10,.6);border:1px solid rgba(255,255,255,.15);border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;backdrop-filter:blur(10px)}
 .vid-arrow:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)}
@@ -597,9 +597,9 @@ section{padding:8rem 3rem}
   <div class="reveal" style="text-align:center">
     <p class="section-num">03</p>
     <h2 class="section-title"><em>Get in Touch</em></h2>
-    <p style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--muted-light);font-weight:300;margin-bottom:1.5rem">For bookings, collaborations &amp; enquiries</p>
+    <p style="font-size:1.1rem;color:var(--muted-light);margin-bottom:1.5rem">For bookings, collaborations &amp; enquiries</p>
     <a id="contact-email" style="font-size:1.1rem;color:var(--fg);letter-spacing:.1em;border-bottom:1px solid var(--border-light);padding-bottom:.3rem;transition:border-color .3s;cursor:pointer"></a>
-    <p style="margin-top:1.2rem;font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--muted-light);font-weight:300">+91 94474 18982</p>
+    <p style="margin-top:1.2rem;font-family:'IBM Plex Mono',monospace;font-size:.95rem;color:var(--muted-light)">+91 94474 18982</p>
   </div>
 </section>
 
