@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0a0a0a;--fg:#e8e4de;--white:#fff;--muted:#5a5a5a;--muted-light:#8a8a8a;--card:#0f0f0f;--border:#1a1a1a;--border-light:#2a2a2a;--accent:#c8a44e}
+:root{--bg:#0a0a0a;--fg:#e8e4de;--white:#fff;--muted:#5a5a5a;--muted-light:#8a8a8a;--card:#0f0f0f;--border:#1a1a1a;--border-light:#2a2a2a;--accent:#e8e4de}
 html{scroll-behavior:smooth;font-size:17px}
 body{background:var(--bg);color:var(--fg);font-family:'Familjen Grotesk',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 ::selection{background:var(--white);color:#000}
@@ -88,7 +88,10 @@ nav.scrolled .nav-logo-full{opacity:1}
 section{padding:8rem 3rem}
 .section-num{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--muted);letter-spacing:.3em;margin-bottom:.5rem;font-weight:400}
 .section-title{font-family:'Familjen Grotesk',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:600;line-height:1.05;margin-bottom:3rem;letter-spacing:-.03em}
-.section-title em{font-style:normal;color:var(--accent)}
+.sub-head{display:flex;align-items:center;gap:1.2rem;max-width:1000px;margin:0 auto 1.5rem}
+.sub-head h3{font-size:1.15rem;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.sub-head::after{content:'';flex:1;height:1px;background:var(--border-light)}
+.section-title em{font-style:normal;font-weight:400;color:#8a8a8a}
 
 /* FEATURED ALBUM */
 .albums-row{max-width:800px;margin:0 auto}
@@ -369,9 +372,7 @@ section{padding:8rem 3rem}
     </div>
 
     <!-- ALBUMS -->
-    <div class="reveal" style="text-align:center;margin-bottom:1rem">
-      <p class="section-num" style="margin-bottom:.3rem">Albums &amp; EPs</p>
-    </div>
+    <div class="sub-head reveal" style="max-width:800px"><h3>Albums &amp; EPs</h3></div>
     <div class="albums-row">
       <a href="https://daszi.bandcamp.com/album/ft-nature" target="_blank" class="album-feature reveal-scale">
         <div class="album-feature-art">
@@ -388,9 +389,7 @@ section{padding:8rem 3rem}
     </div>
 
     <!-- SINGLES -->
-    <div class="reveal" style="text-align:center;margin-top:4rem;margin-bottom:1rem">
-      <p class="section-num" style="margin-bottom:.3rem">Singles</p>
-    </div>
+    <div class="sub-head reveal" style="margin-top:4rem"><h3>Singles</h3></div>
     <div class="tile-grid">
     <a href="https://open.spotify.com/album/5lvHM5WjB21ztgO8nvJL9n" target="_blank" class="tile reveal">
       <div class="tile-art"><img src="art_patharamaattu.jpg" alt="Patharamaattu"><div class="tile-overlay"></div><div class="tile-play"><svg viewBox="0 0 24 24" width="32" height="32"><polygon points="5,3 19,12 5,21" fill="white"/></svg></div></div>
